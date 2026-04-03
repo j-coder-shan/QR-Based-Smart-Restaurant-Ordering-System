@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  Pending
+  Accepted
+  Preparing
+  Ready
+  Delivered
+  Completed
+  Cancelled
+}
+
+enum WaiterCallStatus {
+  Pending
+  Resolved
+}
+
+model Table {
+  id           Int          @id @default(autoincrement())
+  table_number String       @unique @db.VarChar
+  qr_token     String       @unique
+  capacity     Int?
+  is_active    Boolean      @default(true)
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  sessions     Session[]
+  orders       Order[]
+  waiterCalls  WaiterCall[]
+
+  @@map("tables")
+}
+
+model Session {
+  id           Int          @id @default(autoincrement())
+  session_id   String       @unique @default(uuid()) @db.Uuid
+  table_id     Int
+  is_active    Boolean      @default(true)
+  start_time   DateTime     @default(now())
+  end_time     DateTime?
+  expires_at   DateTime?
+
+  table        Table        @relation(fields: [table_id], references: [id])
+  orders       Order[]
+  waiterCalls  WaiterCall[]
+
+  @@index([table_id])
+  @@index([session_id])
+  @@map("sessions")
+}
+
+model MenuItem {
+  id           Int          @id @default(autoincrement())
+  name         String       @db.VarChar
+  description  String?      @db.Text
+  price        Decimal
+  image_url    String?      @db.Text
+  category     String?      @db.VarChar
+  stock        Int          @default(0)
+  is_available Boolean      @default(true)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  orderItems   OrderItem[]
+  feedback     Feedback[]
+
+  @@index([category])
+  @@map("menu_items")
+}
+
+model Order {
+  id             Int          @id @default(autoincrement())
+  order_code     String       @unique @default(uuid()) @db.Uuid
+  table_id       Int
+  session_id     Int
+  status         OrderStatus  @default(Pending)
+  total_amount   Decimal?     @default(0.0)
+  estimated_time Int?
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  table          Table        @relation(fields: [table_id], references: [id])
+  session        Session      @relation(fields: [session_id], references: [id])
+  orderItems     OrderItem[]
+  feedback       Feedback[]
+
+  @@index([table_id])
+  @@index([session_id])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           Int          @id @default(autoincrement())
+  order_id     Int
+  menu_item_id Int
+  quantity     Int          @default(1)
+  unit_price   Decimal?
+  subtotal     Decimal?
+
+  order        Order        @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  menuItem     MenuItem     @relation(fields: [menu_item_id], references: [id])
+
+  @@map("order_items")
+}
+
+model Feedback {
+  id           Int          @id @default(autoincrement())
+  order_id     Int
+  menu_item_id Int?
+  rating       Int
+  comment      String?      @db.Text
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  order        Order        @relation(fields: [order_id], references: [id])
+  menuItem     MenuItem?    @relation(fields: [menu_item_id], references: [id])
+
+  @@map("feedback")
+}
+
+model WaiterCall {
+  id           Int              @id @default(autoincrement())
+  table_id     Int
+  session_id   Int
+  status       WaiterCallStatus @default(Pending)
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  table        Table            @relation(fields: [table_id], references: [id])
+  session      Session          @relation(fields: [session_id], references: [id])
+
+  @@map("waiter_calls")
+}
+
+model Admin {
+  id            Int       @id @default(autoincrement())
+  username      String    @unique @db.VarChar
+  password_hash String    @db.Text
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("admins")
+}
