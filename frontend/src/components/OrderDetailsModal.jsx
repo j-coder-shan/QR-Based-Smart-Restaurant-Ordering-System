@@ -41,10 +41,10 @@ const OrderDetailsModal = ({ order, onClose }) => {
                   </div>
                   <div>
                     <h4 className="text-lg font-black text-slate-900 mb-1 group-hover:text-orange-500 transition-colors italic uppercase italic">{item.menuItem.name}</h4>
-                    <p className="text-slate-400 text-sm font-bold">{item.quantity} units × ${item.unit_price}</p>
+                    <p className="text-slate-400 text-sm font-bold">{item.quantity} units × Rs.{item.unit_price}</p>
                   </div>
                 </div>
-                <span className="text-xl font-black text-slate-900">${item.subtotal}</span>
+                <span className="text-xl font-black text-slate-900">Rs.{item.subtotal}</span>
               </div>
             ))}
           </div>
@@ -54,7 +54,7 @@ const OrderDetailsModal = ({ order, onClose }) => {
              <div className="relative z-10 flex justify-between items-end">
                 <div>
                    <span className="text-slate-500 font-black uppercase text-[10px] tracking-widest block mb-1">Total Bill</span>
-                   <span className="text-5xl font-black text-orange-500">${order.total_amount}</span>
+                   <span className="text-5xl font-black text-orange-500">Rs.{order.total_amount}</span>
                 </div>
                 <div className={`px-6 py-2 rounded-2xl font-black text-xs uppercase tracking-widest ${order.is_paid ? 'bg-green-500' : 'bg-orange-500'}`}>
                    {order.is_paid ? 'Paid' : 'Unpaid'}

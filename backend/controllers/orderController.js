@@ -88,8 +88,19 @@ exports.createOrder = async (req, res) => {
 };
 
 exports.getAllOrders = async (req, res) => {
+  const { startDate, endDate } = req.query;
   try {
+    const where = {};
+    
+    if (startDate || endDate) {
+      where.createdAt = {
+        gte: startDate ? new Date(startDate) : undefined,
+        lte: endDate ? new Date(endDate) : undefined
+      };
+    }
+
     const orders = await prisma.order.findMany({
+      where,
       include: {
         table: true,
         orderItems: { include: { menuItem: true } }

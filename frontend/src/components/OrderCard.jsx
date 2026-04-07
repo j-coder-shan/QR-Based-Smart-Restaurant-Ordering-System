@@ -35,12 +35,12 @@ const OrderCard = ({ order, onUpdateStatus, onViewDetails }) => {
         {order?.orderItems?.map((item, idx) => (
           <div key={idx} className="flex justify-between items-center text-sm">
             <span className="text-slate-400 font-bold">{item?.quantity} × {item?.menuItem?.name || 'Item'}</span>
-            <span className="text-white font-black">${item?.subtotal || '0.00'}</span>
+            <span className="text-white font-black">Rs.{item?.subtotal || '0.00'}</span>
           </div>
         ))}
         <div className="border-t border-slate-800 pt-4 flex justify-between items-center mt-auto">
             <span className="text-slate-500 font-black uppercase text-[10px] tracking-widest">Total Bill</span>
-            <span className="text-xl font-black text-orange-500 italic">${order?.total_amount}</span>
+            <span className="text-xl font-black text-orange-500 italic">Rs.{order?.total_amount}</span>
         </div>
       </div>
 

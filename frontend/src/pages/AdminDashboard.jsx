@@ -7,7 +7,9 @@ import {
   DollarSign, 
   ShoppingBag, 
   Clock, 
-  CheckCircle2
+  CheckCircle2,
+  Filter,
+  Calendar
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -28,6 +30,31 @@ const AdminDashboard = () => {
     const [revenueData, setRevenueData] = useState([]);
     const [popularItems, setPopularItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [revFilter, setRevFilter] = useState('7d'); // '7d', '30d', 'custom'
+    const [customRevRange, setCustomRevRange] = useState({ start: '', end: '' });
+
+    const fetchRevenueData = async () => {
+        try {
+            let params = {};
+            if (revFilter === '7d') {
+                const d = new Date(); d.setDate(d.getDate() - 7);
+                params.startDate = d.toISOString();
+            } else if (revFilter === '30d') {
+                const d = new Date(); d.setDate(d.getDate() - 30);
+                params.startDate = d.toISOString();
+            } else if (revFilter === 'custom' && customRevRange.start) {
+                params.startDate = new Date(customRevRange.start).toISOString();
+                if (customRevRange.end) {
+                    const d = new Date(customRevRange.end);
+                    d.setHours(23, 59, 59, 999);
+                    params.endDate = d.toISOString();
+                }
+            }
+
+            const res = await api.get('/api/analytics/revenue', { params });
+            setRevenueData(res.data);
+        } catch (err) { console.error(err); }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,6 +75,10 @@ const AdminDashboard = () => {
         };
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (!loading) fetchRevenueData();
+    }, [revFilter, customRevRange.start, customRevRange.end]);
 
     if (loading) return <div className="h-96 flex items-center justify-center"><Loader /></div>;
 
@@ -98,10 +129,41 @@ const AdminDashboard = () => {
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <ChartCard 
                   title="Revenue Trend" 
-                  subtitle="Last 7 Days Earnings"
+                  subtitle={revFilter === 'custom' ? `Custom Range: ${customRevRange.start} to ${customRevRange.end || 'Now'}` : `Showing last ${revFilter === '7d' ? '7' : '30'} days`}
                 >
-                    <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={revenueData}>
+                    <div className="flex flex-wrap items-center gap-3 mb-6 bg-slate-950/50 p-2 rounded-2xl border border-slate-900 w-fit">
+                        {['7d', '30d', 'custom'].map(f => (
+                            <button 
+                                key={f}
+                                onClick={() => setRevFilter(f)}
+                                className={`px-4 py-2 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all ${revFilter === f ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+                            >
+                                {f}
+                            </button>
+                        ))}
+
+                        {revFilter === 'custom' && (
+                            <div className="flex items-center gap-2 px-2 animate-in fade-in slide-in-from-left-2">
+                                <input 
+                                    type="date" 
+                                    value={customRevRange.start}
+                                    onChange={e => setCustomRevRange(prev => ({ ...prev, start: e.target.value }))}
+                                    className="bg-slate-900 border border-slate-800 text-white p-2 rounded-lg text-[9px] font-bold outline-none focus:border-orange-500"
+                                />
+                                <span className="text-slate-700 font-bold text-[9px]">→</span>
+                                <input 
+                                    type="date" 
+                                    value={customRevRange.end}
+                                    onChange={e => setCustomRevRange(prev => ({ ...prev, end: e.target.value }))}
+                                    className="bg-slate-900 border border-slate-800 text-white p-2 rounded-lg text-[9px] font-bold outline-none focus:border-orange-500"
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={revenueData}>
                             <defs>
                                 <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
@@ -132,6 +194,7 @@ const AdminDashboard = () => {
                             <Area type="monotone" dataKey="revenue" stroke="#f97316" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
                         </AreaChart>
                     </ResponsiveContainer>
+                    </div>
                 </ChartCard>
 
                 <ChartCard 

@@ -20,12 +20,44 @@ const OrdersPage = () => {
     const [activeTab, setActiveTab] = useState('active'); // 'pending', 'active', 'completed'
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [dateFilter, setDateFilter] = useState('today'); // 'today', 'yesterday', 'custom'
+    const [customRange, setCustomRange] = useState({ start: '', end: '' });
     const socket = useRef(null);
 
     const fetchInitialData = async () => {
+        setLoading(true);
         try {
+            let params = {};
+            
+            if (dateFilter === 'today') {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                params.startDate = today.toISOString();
+            } else if (dateFilter === 'yesterday') {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                yesterday.setHours(0, 0, 0, 0);
+                const endOfYesterday = new Date();
+                endOfYesterday.setDate(endOfYesterday.getDate() - 1);
+                endOfYesterday.setHours(23, 59, 59, 999);
+                params.startDate = yesterday.toISOString();
+                params.endDate = endOfYesterday.toISOString();
+            } else if (dateFilter === 'custom' && customRange.start) {
+                params.startDate = new Date(customRange.start).toISOString();
+                if (customRange.end) {
+                    const end = new Date(customRange.end);
+                    end.setHours(23, 59, 59, 999);
+                    params.endDate = end.toISOString();
+                }
+            }
+
+            // NOTE: We only apply date filters to fetching if we are looking at completed orders 
+            // OR if the user specifically requested a non-default filter.
+            // For Pending/Active, we usually want to see ALL unresolved orders.
+            // But let's follow the user's lead: "Filter Orders... Filter by Date"
+            
             const [ordersRes, callsRes] = await Promise.all([
-                api.get('/api/orders'),
+                api.get('/api/orders', { params }),
                 api.get('/api/waiter-call')
             ]);
             setOrders(ordersRes.data);
@@ -39,7 +71,9 @@ const OrdersPage = () => {
 
     useEffect(() => {
         fetchInitialData();
+    }, [dateFilter, customRange.start, customRange.end]);
 
+    useEffect(() => {
         // Socket.io Setup
         socket.current = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
 
@@ -152,17 +186,60 @@ const OrdersPage = () => {
                 )}
             </AnimatePresence>
 
-            {/* Main Orders Stream */}
+            {/* Filter & Search Section */}
             <section className="space-y-6">
-                <div className="relative group">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-orange-500 transition-colors w-5 h-5" />
-                    <input 
-                        type="text" 
-                        placeholder="Search by Table or Order ID..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-800 text-white p-6 pl-16 rounded-[32px] outline-none focus:ring-2 focus:ring-orange-500/50 transition-all font-bold tracking-widest uppercase text-xs"
-                    />
+                <div className="flex flex-col lg:flex-row gap-6">
+                    <div className="flex-1 relative group">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-orange-500 transition-colors w-5 h-5" />
+                        <input 
+                            type="text" 
+                            placeholder="Search by Table or Order ID..." 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full bg-slate-900 border border-slate-800 text-white p-6 pl-16 rounded-[32px] outline-none focus:ring-2 focus:ring-orange-500/50 transition-all font-bold tracking-widest uppercase text-xs"
+                        />
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-4 bg-slate-950 p-2 rounded-[32px] border border-slate-900">
+                        <div className="flex p-1 bg-slate-900 rounded-2xl border border-slate-800">
+                            {['today', 'yesterday', 'custom'].map(f => (
+                                <button 
+                                    key={f}
+                                    onClick={() => setDateFilter(f)}
+                                    className={`px-6 py-3 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all ${dateFilter === f ? 'bg-slate-800 text-white' : 'text-slate-600 hover:text-slate-400'}`}
+                                >
+                                    {f}
+                                </button>
+                            ))}
+                        </div>
+
+                        {dateFilter === 'custom' && (
+                            <div className="flex items-center gap-2 px-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                <input 
+                                    type="date" 
+                                    value={customRange.start}
+                                    onChange={e => setCustomRange(prev => ({ ...prev, start: e.target.value }))}
+                                    className="bg-slate-900 border border-slate-800 text-white p-3 rounded-xl text-[10px] font-bold outline-none focus:border-orange-500"
+                                />
+                                <span className="text-slate-700 font-bold">to</span>
+                                <input 
+                                    type="date" 
+                                    value={customRange.end}
+                                    onChange={e => setCustomRange(prev => ({ ...prev, end: e.target.value }))}
+                                    className="bg-slate-900 border border-slate-800 text-white p-3 rounded-xl text-[10px] font-bold outline-none focus:border-orange-500"
+                                />
+                            </div>
+                        )}
+                        
+                        <div className="px-4 border-l border-slate-900 flex items-center space-x-2 text-slate-500">
+                            <Filter className="w-4 h-4" />
+                            <span className="text-[9px] font-black uppercase tracking-widest">
+                                {dateFilter === 'today' ? "Showing Today" : 
+                                 dateFilter === 'yesterday' ? "Showing Yesterday" : 
+                                 customRange.start ? `${customRange.start} → ${customRange.end || 'Now'}` : "Select Range"}
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

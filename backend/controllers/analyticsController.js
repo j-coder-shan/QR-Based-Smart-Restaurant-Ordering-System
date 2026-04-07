@@ -28,12 +28,18 @@ exports.getSummary = async (req, res) => {
 
 exports.getRevenueData = async (req, res) => {
   try {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const { startDate, endDate } = req.query;
+    
+    let start = startDate ? new Date(startDate) : new Date();
+    if (!startDate) start.setDate(start.getDate() - 7);
+    start.setHours(0, 0, 0, 0);
+
+    let end = endDate ? new Date(endDate) : new Date();
+    end.setHours(23, 59, 59, 999);
 
     const revenue = await prisma.order.findMany({
       where: {
-        createdAt: { gte: sevenDaysAgo },
+        createdAt: { gte: start, lte: end },
         is_paid: true
       },
       select: {
@@ -50,10 +56,17 @@ exports.getRevenueData = async (req, res) => {
       return acc;
     }, {});
 
-    const chartData = Object.keys(grouped).map(date => ({
-      date,
-      revenue: grouped[date]
-    }));
+    // Generate full list of dates in range
+    const chartData = [];
+    const currDate = new Date(start);
+    while (currDate <= end) {
+      const dateStr = currDate.toISOString().split('T')[0];
+      chartData.push({
+        date: dateStr,
+        revenue: grouped[dateStr] || 0
+      });
+      currDate.setDate(currDate.getDate() + 1);
+    }
 
     res.json(chartData);
   } catch (error) {
