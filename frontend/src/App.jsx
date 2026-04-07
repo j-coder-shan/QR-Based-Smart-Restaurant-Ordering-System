@@ -11,7 +11,7 @@ import CartPage from './pages/CartPage';
 import OrderStatusPage from './pages/OrderStatusPage';
 import FeedbackPage from './pages/FeedbackPage';
 
-// Admin Pages
+// Admin / SaaS Pages
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminLayout from './components/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
@@ -20,6 +20,11 @@ import MenuManager from './pages/MenuManager';
 import TableManager from './pages/TableManager';
 import AnalyticsPage from './pages/AnalyticsPage';
 import FeedbackCenter from './pages/FeedbackCenter';
+import RegisterRestaurant from './pages/RegisterRestaurant';
+
+// Super Admin Pages
+import SuperAdminLogin from './pages/SuperAdminLogin';
+import SuperAdminDashboard from './pages/SuperAdminDashboard';
 
 import ErrorPage from './pages/ErrorPage';
 
@@ -37,7 +42,10 @@ function App() {
             <Route path="/status/:id" element={<OrderStatusPage />} />
             <Route path="/feedback/:orderId" element={<FeedbackPage />} />
             
-            {/* Admin Auth */}
+            {/* SaaS Onboarding */}
+            <Route path="/register" element={<RegisterRestaurant />} />
+            
+            {/* Admin / Staff Auth */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
             
             {/* Admin Dashboard Protected Routes */}
@@ -50,6 +58,10 @@ function App() {
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="feedback" element={<FeedbackCenter />} />
             </Route>
+
+            {/* Super Admin Routes */}
+            <Route path="/superadmin/login" element={<SuperAdminLogin />} />
+            <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
 
             <Route path="/error" element={<ErrorPage />} />
             <Route path="*" element={<Navigate to="/" />} />

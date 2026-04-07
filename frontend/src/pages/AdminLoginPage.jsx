@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { ChefHat, Lock, User, Sparkles, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { FiLock, FiUser, FiLayout, FiAlertCircle, FiArrowRight } from 'react-icons/fi';
+import { ChefHat } from 'lucide-react';
 
 const AdminLoginPage = () => {
     const [username, setUsername] = useState('');
@@ -11,93 +12,119 @@ const AdminLoginPage = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) navigate('/admin/dashboard');
+    }, [navigate]);
+
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
+
         try {
-            const res = await api.post('/api/admin/login', { username, password });
-            localStorage.setItem('adminToken', res.data.token);
-            navigate('/admin/dashboard');
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const res = await axios.post(`${apiBase}/admin/login`, { username, password });
+
+            localStorage.setItem('token', res.data.token);
+            localStorage.setItem('role', res.data.role);
+            localStorage.setItem('restaurantId', res.data.restaurantId);
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+
+            if (res.data.role === 'STAFF') {
+                navigate('/admin/orders'); // Staff goes to kitchen
+            } else {
+                navigate('/admin/dashboard');
+            }
         } catch (err) {
-            setError(err.response?.data?.error || 'Login failed');
+            setError(err.response?.data?.error || 'Login failed. Please check credentials.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 selection:bg-orange-500/30">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 bg-gradient-to-br from-orange-50 to-white">
             <motion.div 
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                className="w-full max-w-md"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-md w-full"
             >
-                <div className="bg-slate-900/50 border border-slate-800 p-12 rounded-[60px] shadow-2xl backdrop-blur-xl relative overflow-hidden">
-                    {/* Background decorations */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 blur-3xl -z-10" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-500/5 blur-3xl -z-10" />
-
-                    <div className="text-center mb-10">
-                        <div className="w-20 h-20 bg-orange-500 rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-xl shadow-orange-500/20 group hover:rotate-12 transition-transform duration-500">
-                            <ChefHat className="text-white w-10 h-10" />
-                        </div>
-                        <div className="bg-orange-500/10 text-orange-500 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest inline-flex items-center space-x-2 mb-6 border border-orange-500/20">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            <span>Authorized Access Only</span>
-                        </div>
-                        <h1 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">SmartDine</h1>
-                        <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Management Terminal</p>
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-xl shadow-orange-200/50 mb-4 border-2 border-orange-100">
+                        <ChefHat className="text-orange-500 w-8 h-8" />
                     </div>
+                    <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase italic">
+                        Smart <span className="text-orange-500">Staff</span> Portal
+                    </h1>
+                    <p className="text-slate-400 font-bold text-sm tracking-widest uppercase mt-2">Authenticated Access Only</p>
+                </div>
 
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        <div className="space-y-4">
-                            <div className="relative group">
-                                <User className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-orange-500 transition-colors w-5 h-5" />
-                                <input
+                <form onSubmit={handleLogin} className="bg-white rounded-[40px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] p-10 border-2 border-slate-50 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-orange-600"></div>
+                    
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Username / ID</label>
+                            <div className="relative">
+                                <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                <input 
                                     type="text"
-                                    placeholder="USERNAME"
+                                    placeholder="Enter username"
+                                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:border-orange-500 focus:bg-white outline-none transition-all font-bold text-slate-700"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full bg-slate-950 border border-slate-800 text-white p-6 pl-16 rounded-3xl outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all font-bold tracking-widest uppercase text-xs"
                                     required
                                 />
                             </div>
-                            <div className="relative group">
-                                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-orange-500 transition-colors w-5 h-5" />
-                                <input
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Access PIN / Password</label>
+                            <div className="relative">
+                                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+                                <input 
                                     type="password"
-                                    placeholder="PASSWORD"
+                                    placeholder="••••••••"
+                                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:border-orange-500 focus:bg-white outline-none transition-all font-bold text-slate-700"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-slate-950 border border-slate-800 text-white p-6 pl-16 rounded-3xl outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all font-bold tracking-widest uppercase text-xs"
                                     required
                                 />
                             </div>
                         </div>
 
                         {error && (
-                            <motion.p 
-                                initial={{ opacity: 0, x: -10 }} 
-                                animate={{ opacity: 1, x: 0 }}
-                                className="text-red-500 text-[10px] font-black uppercase tracking-widest text-center"
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="bg-red-50 text-red-500 p-4 rounded-2xl text-sm font-bold flex items-center gap-3 border border-red-100"
                             >
+                                <FiAlertCircle className="shrink-0" />
                                 {error}
-                            </motion.p>
+                            </motion.div>
                         )}
 
                         <button 
+                            type="submit"
                             disabled={loading}
-                            className="w-full bg-orange-500 text-white py-6 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-orange-600 transition-all active:scale-95 shadow-xl shadow-orange-500/20 flex items-center justify-center space-x-3 group"
+                            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-lg hover:bg-orange-500 hover:shadow-2xl hover:shadow-orange-200 transition-all active:scale-95 disabled:bg-slate-200 disabled:shadow-none flex items-center justify-center gap-3 group"
                         >
-                            <span>{loading ? 'Authenticating...' : 'Authorize Terminal'}</span>
-                            {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+                            {loading ? 'Verifying...' : 'Access Portal'}
+                            {!loading && <FiArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />}
                         </button>
-                    </form>
+                    </div>
+                </form>
+
+                <div className="text-center mt-8">
+                    <button onClick={() => navigate('/')} className="text-slate-400 hover:text-slate-900 font-bold text-sm tracking-wide transition-colors">
+                        Return to Public Terminal
+                    </button>
+                    <div className="mt-4 flex items-center justify-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">System Secure</span>
+                    </div>
                 </div>
-                <p className="mt-8 text-slate-600 text-[10px] font-black uppercase tracking-[0.2em] text-center">
-                    Intelligent Restaurant Ordering System © 2026
-                </p>
             </motion.div>
         </div>
     );

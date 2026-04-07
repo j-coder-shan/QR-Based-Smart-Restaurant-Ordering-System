@@ -11,11 +11,15 @@ exports.getBillSummary = async (req, res) => {
           where: { status: { not: 'Cancelled' } },
           include: { orderItems: { include: { menuItem: true } } }
         },
-        table: true
+        table: true,
+        restaurant: true
       }
     });
 
     if (!session) return res.status(404).json({ error: 'Session not found' });
+    if (session.restaurant.status === 'BLOCKED') {
+        return res.status(403).json({ error: 'This restaurant service is currently unavailable.' });
+    }
 
     let totalAmount = 0;
     const items = [];
@@ -33,6 +37,7 @@ exports.getBillSummary = async (req, res) => {
     });
 
     res.json({
+      restaurant_name: session.restaurant.name,
       table_number: session.table.table_number,
       orders: session.orders,
       items: items,
@@ -48,8 +53,14 @@ exports.getBillSummary = async (req, res) => {
 exports.requestBill = async (req, res) => {
   const { session_id } = req.body;
   try {
-    const session = await prisma.session.findUnique({ where: { session_id } });
+    const session = await prisma.session.findUnique({ 
+        where: { session_id },
+        include: { restaurant: true }
+    });
     if (!session) return res.status(404).json({ error: 'Session not found' });
+    if (session.restaurant.status === 'BLOCKED') {
+        return res.status(403).json({ error: 'Restaurant is blocked' });
+    }
 
     await prisma.session.update({
       where: { session_id },
@@ -63,9 +74,14 @@ exports.requestBill = async (req, res) => {
 };
 
 exports.getBillRequests = async (req, res) => {
+  const { restaurantId } = req;
   try {
     const sessions = await prisma.session.findMany({
-      where: { bill_requested: true, is_active: true },
+      where: { 
+          restaurant_id: restaurantId,
+          bill_requested: true, 
+          is_active: true 
+      },
       include: {
         table: true,
         orders: { where: { status: { not: 'Cancelled' } } }
@@ -90,17 +106,21 @@ exports.getBillRequests = async (req, res) => {
 
 exports.processPayment = async (req, res) => {
   const { session_id, payment_method } = req.body;
+  const { restaurantId } = req;
 
   try {
-    const session = await prisma.session.findUnique({
-      where: { session_id },
+    const session = await prisma.session.findFirst({
+      where: { 
+          session_id: session_id,
+          restaurant_id: restaurantId
+      },
       include: { 
         orders: { where: { status: { not: 'Cancelled' } } } 
       }
     });
 
     if (!session || !session.is_active) {
-      return res.status(400).json({ error: 'Inctive or non-existent session' });
+      return res.status(400).json({ error: 'Inactive or non-existent session' });
     }
 
     const totalAmount = session.orders.reduce((acc, o) => acc + Number(o.total_amount), 0);
@@ -109,6 +129,7 @@ exports.processPayment = async (req, res) => {
       // 1. Create Payment
       const payment = await tx.payment.create({
         data: {
+          restaurant_id: restaurantId,
           session_id: session.id,
           total_amount: totalAmount,
           payment_method: payment_method,

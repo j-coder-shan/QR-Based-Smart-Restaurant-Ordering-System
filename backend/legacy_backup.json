@@ -1,0 +1,665 @@
+{
+  "tables": [
+    {
+      "id": 1,
+      "table_number": "T01",
+      "qr_token": "TOKEN_T01_XYZ",
+      "capacity": 2,
+      "is_active": true,
+      "created_at": "2026-04-04T01:46:25.611Z"
+    },
+    {
+      "id": 2,
+      "table_number": "T02",
+      "qr_token": "TOKEN_T02_ABC",
+      "capacity": 4,
+      "is_active": true,
+      "created_at": "2026-04-04T01:46:25.615Z"
+    },
+    {
+      "id": 3,
+      "table_number": "T03",
+      "qr_token": "TOKEN_T03_DEF",
+      "capacity": 6,
+      "is_active": true,
+      "created_at": "2026-04-04T01:46:25.617Z"
+    }
+  ],
+  "menuItems": [
+    {
+      "id": 2,
+      "name": "Chicken Curry",
+      "description": null,
+      "price": "15.5",
+      "image_url": null,
+      "category": "Curry",
+      "stock": 29,
+      "is_available": true,
+      "created_at": "2026-04-04T01:46:25.623Z",
+      "updated_at": "2026-04-05T10:27:32.569Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 1,
+      "name": "Special Fried Rice",
+      "description": null,
+      "price": "12.99",
+      "image_url": null,
+      "category": "Rice",
+      "stock": 41,
+      "is_available": true,
+      "created_at": "2026-04-04T01:46:25.620Z",
+      "updated_at": "2026-04-07T03:58:34.407Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 5,
+      "total_revenue": "64.95",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 3,
+      "name": "Mango Lassi",
+      "description": null,
+      "price": "4.5",
+      "image_url": null,
+      "category": "Drinks",
+      "stock": 93,
+      "is_available": true,
+      "created_at": "2026-04-04T01:46:25.626Z",
+      "updated_at": "2026-04-07T03:58:34.411Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 3,
+      "total_revenue": "13.5",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 4,
+      "name": "Sample Rice & Curry Item",
+      "description": "This is a sample item for Rice & Curry category.",
+      "price": "500",
+      "image_url": null,
+      "category": "Rice & Curry",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2026-04-07T09:24:12.353Z",
+      "updated_at": "2026-04-07T09:24:12.353Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 5,
+      "name": "Sample Kottu Item",
+      "description": "This is a sample item for Kottu category.",
+      "price": "500",
+      "image_url": null,
+      "category": "Kottu",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2026-04-07T09:24:12.371Z",
+      "updated_at": "2026-04-07T09:24:12.371Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 6,
+      "name": "Sample Hoppers Item",
+      "description": "This is a sample item for Hoppers category.",
+      "price": "500",
+      "image_url": null,
+      "category": "Hoppers",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2026-04-07T09:24:12.374Z",
+      "updated_at": "2026-04-07T09:24:12.374Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 8,
+      "name": "Sample Main Course Item",
+      "description": "This is a sample item for Main Course category.",
+      "price": "500",
+      "image_url": null,
+      "category": "Main Course",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2026-04-07T09:24:12.379Z",
+      "updated_at": "2026-04-07T09:24:12.379Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 10,
+      "name": "Sample Beverages Item",
+      "description": "This is a sample item for Beverages category.",
+      "price": "500",
+      "image_url": null,
+      "category": "Beverages",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2026-04-07T09:24:12.385Z",
+      "updated_at": "2026-04-07T09:24:12.385Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 11,
+      "name": "Sample Desserts Item",
+      "description": "This is a sample item for Desserts category.",
+      "price": "500",
+      "image_url": null,
+      "category": "Desserts",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2026-04-07T09:24:12.387Z",
+      "updated_at": "2026-04-07T09:24:12.387Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 9,
+      "name": "Sample Short Eats Item",
+      "description": "This is a sample item for Short Eats category.",
+      "price": "100",
+      "image_url": null,
+      "category": "Short Eats",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2026-04-07T09:24:12.381Z",
+      "updated_at": "2026-04-07T09:28:44.640Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    },
+    {
+      "id": 7,
+      "name": "Sample Appetizers Item",
+      "description": "This is a sample item for Appetizers category.",
+      "price": "500",
+      "image_url": null,
+      "category": "Appetizers",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2026-04-07T09:24:12.376Z",
+      "updated_at": "2026-04-07T09:41:02.382Z",
+      "low_stock_threshold": 5,
+      "prep_time": 15,
+      "total_orders": 0,
+      "total_revenue": "0",
+      "avg_rating": 0,
+      "review_count": 0
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Curry",
+      "created_at": "2026-04-07T09:57:07.045Z"
+    },
+    {
+      "id": 2,
+      "name": "Rice",
+      "created_at": "2026-04-07T09:57:07.053Z"
+    },
+    {
+      "id": 3,
+      "name": "Drinks",
+      "created_at": "2026-04-07T09:57:07.055Z"
+    },
+    {
+      "id": 4,
+      "name": "Rice & Curry",
+      "created_at": "2026-04-07T09:57:07.057Z"
+    },
+    {
+      "id": 5,
+      "name": "Kottu",
+      "created_at": "2026-04-07T09:57:07.060Z"
+    },
+    {
+      "id": 6,
+      "name": "Hoppers",
+      "created_at": "2026-04-07T09:57:07.063Z"
+    },
+    {
+      "id": 7,
+      "name": "Main Course",
+      "created_at": "2026-04-07T09:57:07.066Z"
+    },
+    {
+      "id": 8,
+      "name": "Beverages",
+      "created_at": "2026-04-07T09:57:07.070Z"
+    },
+    {
+      "id": 9,
+      "name": "Desserts",
+      "created_at": "2026-04-07T09:57:07.072Z"
+    },
+    {
+      "id": 10,
+      "name": "Short Eats",
+      "created_at": "2026-04-07T09:57:07.075Z"
+    },
+    {
+      "id": 11,
+      "name": "Appetizers",
+      "created_at": "2026-04-07T09:57:07.077Z"
+    },
+    {
+      "id": 12,
+      "name": "Seafood",
+      "created_at": "2026-04-07T10:02:02.893Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": 2,
+      "order_code": "014dfa17-194b-4315-979e-f9575d9d30df",
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Completed",
+      "total_amount": "20",
+      "estimated_time": 15,
+      "created_at": "2026-04-05T10:27:32.551Z",
+      "updated_at": "2026-04-05T11:48:36.327Z",
+      "is_paid": true
+    },
+    {
+      "id": 1,
+      "order_code": "31c94b36-9d5a-4771-a4fc-ca551c74274c",
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Completed",
+      "total_amount": "25.98",
+      "estimated_time": 15,
+      "created_at": "2026-04-05T10:23:30.503Z",
+      "updated_at": "2026-04-05T11:48:36.327Z",
+      "is_paid": true
+    },
+    {
+      "id": 3,
+      "order_code": "ec01f20b-210e-48be-9cf0-bd9b5151a2da",
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Completed",
+      "total_amount": "9",
+      "estimated_time": 15,
+      "created_at": "2026-04-05T10:51:49.523Z",
+      "updated_at": "2026-04-05T11:48:36.327Z",
+      "is_paid": true
+    },
+    {
+      "id": 4,
+      "order_code": "64adcf88-a5fb-4f7c-b0a8-a7bc8257d1bd",
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Completed",
+      "total_amount": "12.99",
+      "estimated_time": 15,
+      "created_at": "2026-04-05T11:00:38.253Z",
+      "updated_at": "2026-04-05T11:48:36.327Z",
+      "is_paid": true
+    },
+    {
+      "id": 6,
+      "order_code": "c8a4920d-661d-4a97-9e7a-a2a58d5e7a8c",
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Completed",
+      "total_amount": "12.99",
+      "estimated_time": 15,
+      "created_at": "2026-04-05T11:18:38.351Z",
+      "updated_at": "2026-04-05T11:48:36.327Z",
+      "is_paid": true
+    },
+    {
+      "id": 5,
+      "order_code": "eaeef552-d544-4c47-95b9-423684b08075",
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Completed",
+      "total_amount": "4.5",
+      "estimated_time": 15,
+      "created_at": "2026-04-05T11:02:06.709Z",
+      "updated_at": "2026-04-05T11:48:36.327Z",
+      "is_paid": true
+    },
+    {
+      "id": 7,
+      "order_code": "40b97be7-00da-4044-abbb-0f75ef9ba92f",
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Completed",
+      "total_amount": "12.99",
+      "estimated_time": null,
+      "created_at": "2026-04-05T11:48:36.279Z",
+      "updated_at": "2026-04-05T11:48:36.327Z",
+      "is_paid": true
+    },
+    {
+      "id": 8,
+      "order_code": "1725b492-10a8-4b80-8993-913e26d8837f",
+      "table_id": 1,
+      "session_id": 2,
+      "status": "Completed",
+      "total_amount": "12.99",
+      "estimated_time": null,
+      "created_at": "2026-04-05T11:55:23.160Z",
+      "updated_at": "2026-04-05T12:00:19.451Z",
+      "is_paid": true
+    },
+    {
+      "id": 9,
+      "order_code": "9dae065e-7ea7-4b45-a3ea-1b7ba63a3eca",
+      "table_id": 1,
+      "session_id": 3,
+      "status": "Completed",
+      "total_amount": "4.5",
+      "estimated_time": null,
+      "created_at": "2026-04-05T12:04:41.939Z",
+      "updated_at": "2026-04-05T12:11:18.426Z",
+      "is_paid": true
+    },
+    {
+      "id": 10,
+      "order_code": "6482667b-3137-4e13-93b9-1309b6ecdb28",
+      "table_id": 1,
+      "session_id": 5,
+      "status": "Completed",
+      "total_amount": "12.99",
+      "estimated_time": null,
+      "created_at": "2026-04-05T12:11:36.357Z",
+      "updated_at": "2026-04-05T12:17:03.886Z",
+      "is_paid": true
+    },
+    {
+      "id": 11,
+      "order_code": "2b8b92ba-62d6-45e2-b06b-e35626ec72de",
+      "table_id": 1,
+      "session_id": 4,
+      "status": "Completed",
+      "total_amount": "4.5",
+      "estimated_time": null,
+      "created_at": "2026-04-07T03:51:17.175Z",
+      "updated_at": "2026-04-07T03:51:57.946Z",
+      "is_paid": true
+    },
+    {
+      "id": 12,
+      "order_code": "573e6f27-5926-49d2-8882-cbe525a5002c",
+      "table_id": 1,
+      "session_id": 6,
+      "status": "Completed",
+      "total_amount": "12.99",
+      "estimated_time": null,
+      "created_at": "2026-04-07T03:52:52.396Z",
+      "updated_at": "2026-04-07T03:54:50.144Z",
+      "is_paid": true
+    },
+    {
+      "id": 13,
+      "order_code": "c00f6256-f3ac-450d-a8ff-c128683f2989",
+      "table_id": 1,
+      "session_id": 7,
+      "status": "Completed",
+      "total_amount": "17.49",
+      "estimated_time": null,
+      "created_at": "2026-04-07T03:58:34.416Z",
+      "updated_at": "2026-04-07T08:03:49.419Z",
+      "is_paid": true
+    }
+  ],
+  "orderItems": [
+    {
+      "id": 1,
+      "order_id": 1,
+      "menu_item_id": 1,
+      "quantity": 2,
+      "unit_price": "12.99",
+      "subtotal": "25.98"
+    },
+    {
+      "id": 2,
+      "order_id": 2,
+      "menu_item_id": 2,
+      "quantity": 1,
+      "unit_price": "15.5",
+      "subtotal": "15.5"
+    },
+    {
+      "id": 3,
+      "order_id": 2,
+      "menu_item_id": 3,
+      "quantity": 1,
+      "unit_price": "4.5",
+      "subtotal": "4.5"
+    },
+    {
+      "id": 4,
+      "order_id": 3,
+      "menu_item_id": 3,
+      "quantity": 2,
+      "unit_price": "4.5",
+      "subtotal": "9"
+    },
+    {
+      "id": 5,
+      "order_id": 4,
+      "menu_item_id": 1,
+      "quantity": 1,
+      "unit_price": "12.99",
+      "subtotal": "12.99"
+    },
+    {
+      "id": 6,
+      "order_id": 5,
+      "menu_item_id": 3,
+      "quantity": 1,
+      "unit_price": "4.5",
+      "subtotal": "4.5"
+    },
+    {
+      "id": 7,
+      "order_id": 6,
+      "menu_item_id": 1,
+      "quantity": 1,
+      "unit_price": "12.99",
+      "subtotal": "12.99"
+    },
+    {
+      "id": 8,
+      "order_id": 7,
+      "menu_item_id": 1,
+      "quantity": 1,
+      "unit_price": "12.99",
+      "subtotal": "12.99"
+    },
+    {
+      "id": 9,
+      "order_id": 8,
+      "menu_item_id": 1,
+      "quantity": 1,
+      "unit_price": "12.99",
+      "subtotal": "12.99"
+    },
+    {
+      "id": 10,
+      "order_id": 9,
+      "menu_item_id": 3,
+      "quantity": 1,
+      "unit_price": "4.5",
+      "subtotal": "4.5"
+    },
+    {
+      "id": 11,
+      "order_id": 10,
+      "menu_item_id": 1,
+      "quantity": 1,
+      "unit_price": "12.99",
+      "subtotal": "12.99"
+    },
+    {
+      "id": 12,
+      "order_id": 11,
+      "menu_item_id": 3,
+      "quantity": 1,
+      "unit_price": "4.5",
+      "subtotal": "4.5"
+    },
+    {
+      "id": 13,
+      "order_id": 12,
+      "menu_item_id": 1,
+      "quantity": 1,
+      "unit_price": "12.99",
+      "subtotal": "12.99"
+    },
+    {
+      "id": 14,
+      "order_id": 13,
+      "menu_item_id": 1,
+      "quantity": 1,
+      "unit_price": "12.99",
+      "subtotal": "12.99"
+    },
+    {
+      "id": 15,
+      "order_id": 13,
+      "menu_item_id": 3,
+      "quantity": 1,
+      "unit_price": "4.5",
+      "subtotal": "4.5"
+    }
+  ],
+  "waiterCalls": [
+    {
+      "id": 1,
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Resolved",
+      "created_at": "2026-04-05T10:58:40.687Z"
+    },
+    {
+      "id": 2,
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Resolved",
+      "created_at": "2026-04-05T11:00:11.449Z"
+    },
+    {
+      "id": 3,
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Resolved",
+      "created_at": "2026-04-05T11:01:29.638Z"
+    },
+    {
+      "id": 5,
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Resolved",
+      "created_at": "2026-04-05T11:06:26.907Z"
+    },
+    {
+      "id": 4,
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Resolved",
+      "created_at": "2026-04-05T11:04:02.103Z"
+    },
+    {
+      "id": 6,
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Resolved",
+      "created_at": "2026-04-05T11:07:09.146Z"
+    },
+    {
+      "id": 7,
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Resolved",
+      "created_at": "2026-04-05T11:25:18.046Z"
+    },
+    {
+      "id": 8,
+      "table_id": 1,
+      "session_id": 1,
+      "status": "Resolved",
+      "created_at": "2026-04-05T11:25:39.917Z"
+    },
+    {
+      "id": 9,
+      "table_id": 1,
+      "session_id": 2,
+      "status": "Resolved",
+      "created_at": "2026-04-05T11:59:55.591Z"
+    },
+    {
+      "id": 10,
+      "table_id": 1,
+      "session_id": 5,
+      "status": "Resolved",
+      "created_at": "2026-04-05T12:16:39.523Z"
+    },
+    {
+      "id": 11,
+      "table_id": 1,
+      "session_id": 4,
+      "status": "Resolved",
+      "created_at": "2026-04-07T03:50:03.145Z"
+    },
+    {
+      "id": 12,
+      "table_id": 1,
+      "session_id": 6,
+      "status": "Resolved",
+      "created_at": "2026-04-07T03:54:38.709Z"
+    }
+  ],
+  "feedback": [],
+  "admins": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password_hash": "$2b$10$jQ4gw2eWzPGaj8ey/QFPS.73P05mqU54kCITQMULhv4iMRQzarfpC",
+      "created_at": "2026-04-04T01:46:25.605Z"
+    }
+  ]
+}

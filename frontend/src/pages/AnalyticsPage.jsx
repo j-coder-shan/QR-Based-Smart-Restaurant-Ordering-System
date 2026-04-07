@@ -19,6 +19,7 @@ const AnalyticsPage = () => {
     const [revenueData, setRevenueData] = useState([]);
     const [popularItems, setPopularItems] = useState([]);
     const [categoryStats, setCategoryStats] = useState([]);
+    const [forecastData, setForecastData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [revFilter, setRevFilter] = useState('7d'); // '7d', '30d', 'custom'
     const [customRevRange, setCustomRevRange] = useState({ start: '', end: '' });
@@ -47,12 +48,25 @@ const AnalyticsPage = () => {
 
     const fetchData = async () => {
         try {
-            const [popRes, catRes] = await Promise.all([
+            const [popRes, catRes, forecastRes] = await Promise.all([
                 api.get('/api/analytics/popular'),
-                api.get('/api/analytics/categories')
+                api.get('/api/analytics/categories'),
+                api.get('/api/analytics/daily-forecast')
             ]);
             setPopularItems(popRes.data);
             setCategoryStats(catRes.data);
+            
+            // Transform forecast data for Recharts
+            const transformedForecast = forecastRes.data.map(d => {
+                const entry = { day: d.day };
+                d.topItems.forEach((item, idx) => {
+                    entry[`avg${idx+1}`] = item.avg;
+                    entry[`name${idx+1}`] = item.name;
+                });
+                return entry;
+            });
+            setForecastData(transformedForecast);
+
             await fetchRevenueData();
         } catch (err) {
             console.error(err);
@@ -210,6 +224,66 @@ const AnalyticsPage = () => {
                             </Bar>
                         </BarChart>
                     </ResponsiveContainer>
+                </ChartCard>
+
+                <ChartCard 
+                  title="Demand Forecasting" 
+                  subtitle="Average top 3 items ordered by day of week (Last 6 Months)"
+                  className="lg:col-span-2"
+                >
+                    <div className="h-[400px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={forecastData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+                                <XAxis 
+                                  dataKey="day" 
+                                  stroke="#64748b" 
+                                  fontSize={10} 
+                                  fontWeight="bold" 
+                                  axisLine={false} 
+                                  tickLine={false} 
+                                />
+                                <YAxis 
+                                  stroke="#64748b" 
+                                  fontSize={10} 
+                                  fontWeight="bold" 
+                                  axisLine={false} 
+                                  tickLine={false} 
+                                />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '16px' }}
+                                    content={({ active, payload, label }) => {
+                                        if (active && payload && payload.length) {
+                                            return (
+                                                <div className="bg-[#0f172a] border border-[#1e293b] p-4 rounded-2xl shadow-2xl">
+                                                    <p className="text-white font-black uppercase tracking-tighter mb-2 italic">{label}</p>
+                                                    <div className="space-y-1">
+                                                        {payload.map((entry, index) => (
+                                                            <div key={index} className="flex justify-between gap-4 text-[10px]">
+                                                                <span className="text-slate-400 font-bold uppercase tracking-widest">{entry.payload[`name${index+1}`]}:</span>
+                                                                <span className="text-orange-500 font-black">{entry.value} units</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    }}
+                                />
+                                <Legend 
+                                  verticalAlign="top" 
+                                  align="right" 
+                                  iconType="circle"
+                                  wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', tracking: 'widest', paddingBottom: '20px' }}
+                                  formatter={(value) => <span className="text-slate-500">{value.replace('avg', 'Rank ')}</span>}
+                                />
+                                <Bar dataKey="avg1" fill="#f97316" radius={[6, 6, 0, 0]} barSize={20} />
+                                <Bar dataKey="avg2" fill="#3b82f6" radius={[6, 6, 0, 0]} barSize={20} />
+                                <Bar dataKey="avg3" fill="#10b981" radius={[6, 6, 0, 0]} barSize={20} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </ChartCard>
             </div>
         </div>

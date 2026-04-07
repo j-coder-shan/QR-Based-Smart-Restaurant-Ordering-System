@@ -1,8 +1,10 @@
 const prisma = require('../prismaClient');
 
 exports.getMenu = async (req, res) => {
+  const { restaurantId } = req;
   try {
     const menu = await prisma.menuItem.findMany({
+      where: { restaurant_id: restaurantId },
       orderBy: { category: 'asc' }
     });
     res.json(menu);
@@ -12,8 +14,10 @@ exports.getMenu = async (req, res) => {
 };
 
 exports.getCategories = async (req, res) => {
+  const { restaurantId } = req;
   try {
     const categories = await prisma.category.findMany({
+      where: { restaurant_id: restaurantId },
       orderBy: { name: 'asc' }
     });
     res.json(categories.map(c => c.name));
@@ -24,13 +28,22 @@ exports.getCategories = async (req, res) => {
 
 exports.createCategory = async (req, res) => {
   const { name } = req.body;
+  const { restaurantId } = req;
   if (!name) return res.status(400).json({ error: 'Category name is required' });
   
   try {
     const category = await prisma.category.upsert({
-      where: { name },
+      where: { 
+          restaurant_id_name: { 
+              restaurant_id: restaurantId,
+              name: name 
+          } 
+      },
       update: {},
-      create: { name }
+      create: { 
+          restaurant_id: restaurantId,
+          name: name 
+      }
     });
     res.status(201).json(category);
   } catch (error) {
@@ -40,9 +53,13 @@ exports.createCategory = async (req, res) => {
 
 exports.getMenuItem = async (req, res) => {
   const { id } = req.params;
+  const { restaurantId } = req;
   try {
-    const menuItem = await prisma.menuItem.findUnique({
-      where: { id: parseInt(id) }
+    const menuItem = await prisma.menuItem.findFirst({
+      where: { 
+          id: parseInt(id),
+          restaurant_id: restaurantId 
+      }
     });
     if (!menuItem) return res.status(404).json({ error: 'Item not found' });
     res.json(menuItem);
@@ -53,20 +70,30 @@ exports.getMenuItem = async (req, res) => {
 
 exports.createMenuItem = async (req, res) => {
   const { name, description, price, category, stock, low_stock_threshold, is_available, prep_time } = req.body;
+  const { restaurantId } = req;
   const image_url = req.file ? `/public/images/${req.file.filename}` : req.body.image_url;
 
   try {
     // Ensure category exists in Category table if provided
     if (category) {
       await prisma.category.upsert({
-        where: { name: category },
+        where: { 
+            restaurant_id_name: { 
+                restaurant_id: restaurantId,
+                name: category 
+            } 
+        },
         update: {},
-        create: { name: category }
+        create: { 
+            restaurant_id: restaurantId,
+            name: category 
+        }
       });
     }
 
     const newItem = await prisma.menuItem.create({
       data: {
+        restaurant_id: restaurantId,
         name,
         description,
         price: parseFloat(price),
@@ -86,6 +113,7 @@ exports.createMenuItem = async (req, res) => {
 
 exports.updateMenuItem = async (req, res) => {
   const { id } = req.params;
+  const { restaurantId } = req;
   const { name, description, price, category, stock, low_stock_threshold, is_available, prep_time } = req.body;
   const image_url = req.file ? `/public/images/${req.file.filename}` : req.body.image_url;
 
@@ -93,14 +121,25 @@ exports.updateMenuItem = async (req, res) => {
     // Ensure category exists in Category table if provided
     if (category) {
       await prisma.category.upsert({
-        where: { name: category },
+        where: { 
+            restaurant_id_name: { 
+                restaurant_id: restaurantId,
+                name: category 
+            } 
+        },
         update: {},
-        create: { name: category }
+        create: { 
+            restaurant_id: restaurantId,
+            name: category 
+        }
       });
     }
 
     const updatedItem = await prisma.menuItem.update({
-      where: { id: parseInt(id) },
+      where: { 
+          id: parseInt(id),
+          restaurant_id: restaurantId
+      },
       data: {
         name,
         description,
@@ -121,8 +160,14 @@ exports.updateMenuItem = async (req, res) => {
 
 exports.deleteMenuItem = async (req, res) => {
   const { id } = req.params;
+  const { restaurantId } = req;
   try {
-    await prisma.menuItem.delete({ where: { id: parseInt(id) } });
+    await prisma.menuItem.delete({ 
+        where: { 
+            id: parseInt(id),
+            restaurant_id: restaurantId
+        } 
+    });
     res.json({ message: 'Menu item deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -131,14 +176,23 @@ exports.deleteMenuItem = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
   const { category } = req.params;
+  const { restaurantId } = req;
   try {
-    // Delete items in category
+    // Delete items in category for this restaurant
     const result = await prisma.menuItem.deleteMany({
-      where: { category: category }
+      where: { 
+          category: category,
+          restaurant_id: restaurantId 
+      }
     });
     // Delete category from Category table
     await prisma.category.delete({
-      where: { name: category }
+      where: { 
+          restaurant_id_name: { 
+              restaurant_id: restaurantId,
+              name: category 
+          }
+      }
     });
     res.json({ message: `Deleted ${result.count} items and category: ${category}` });
   } catch (error) {

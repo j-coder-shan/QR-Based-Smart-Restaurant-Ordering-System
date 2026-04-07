@@ -6,12 +6,20 @@ exports.submitFeedback = async (req, res) => {
   try {
     // 1. Validate session
     const session = await prisma.session.findUnique({
-      where: { session_id: String(session_id).includes('-') ? session_id : undefined, id: !String(session_id).includes('-') ? parseInt(session_id) : undefined },
-      include: { orders: { where: { id: parseInt(order_id) } } }
+      where: { 
+          session_id: String(session_id).includes('-') ? session_id : undefined, 
+          id: !String(session_id).includes('-') ? parseInt(session_id) : undefined 
+      },
+      include: { 
+          orders: { where: { id: parseInt(order_id) } },
+          restaurant: true
+      }
     });
 
     if (!session) return res.status(404).json({ error: 'Session not found' });
     if (session.is_active) return res.status(400).json({ error: 'Feedback only allowed after payment/session ends' });
+
+    const restaurantId = session.restaurant_id;
 
     // 2. Validate order
     const order = session.orders[0];
@@ -20,7 +28,10 @@ exports.submitFeedback = async (req, res) => {
 
     // 3. Validate menu item
     const orderItem = await prisma.orderItem.findFirst({
-      where: { order_id: parseInt(order_id), menu_item_id: parseInt(menu_item_id) }
+      where: { 
+          order_id: parseInt(order_id), 
+          menu_item_id: parseInt(menu_item_id) 
+      }
     });
     if (!orderItem) return res.status(400).json({ error: 'Item was not part of this order' });
 
@@ -29,6 +40,7 @@ exports.submitFeedback = async (req, res) => {
       // Create feedback
       const feedback = await tx.feedback.create({
         data: {
+          restaurant_id: restaurantId,
           order_id: parseInt(order_id),
           menu_item_id: parseInt(menu_item_id),
           rating: parseInt(rating),
@@ -66,16 +78,23 @@ exports.submitFeedback = async (req, res) => {
 
 exports.getMenuItemFeedback = async (req, res) => {
   const { menuItemId } = req.params;
+  const { restaurantId } = req;
   try {
-    const menuItem = await prisma.menuItem.findUnique({
-      where: { id: parseInt(menuItemId) },
+    const menuItem = await prisma.menuItem.findFirst({
+      where: { 
+          id: parseInt(menuItemId),
+          restaurant_id: restaurantId // STRICTOR: Mandatory enforcement
+      },
       select: { avg_rating: true, review_count: true }
     });
 
     if (!menuItem) return res.status(404).json({ error: 'Menu item not found' });
 
     const reviews = await prisma.feedback.findMany({
-      where: { menu_item_id: parseInt(menuItemId) },
+      where: { 
+          menu_item_id: parseInt(menuItemId),
+          restaurant_id: restaurantId // STRICTOR: Mandatory enforcement
+      },
       orderBy: { createdAt: 'desc' },
       take: 10,
       select: { rating: true, comment: true, createdAt: true }
@@ -92,8 +111,10 @@ exports.getMenuItemFeedback = async (req, res) => {
 };
 
 exports.getAllFeedback = async (req, res) => {
+  const { restaurantId } = req;
   try {
     const feedback = await prisma.feedback.findMany({
+      where: { restaurant_id: restaurantId },
       include: {
         menuItem: { select: { name: true } },
         order: { select: { table_id: true } }

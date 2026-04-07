@@ -5,11 +5,17 @@ exports.handleScan = async (req, res) => {
 
   try {
     const table = await prisma.table.findUnique({
-      where: { table_number: tableNumber }
+      where: { qr_token: qrToken },
+      include: { restaurant: true }
     });
 
-    if (!table || table.qr_token !== qrToken) {
-      return res.status(401).json({ error: 'Invalid QR code' });
+    if (!table || table.table_number !== tableNumber) {
+      return res.status(401).json({ error: 'Invalid QR code or table identifier' });
+    }
+
+    // Check if restaurant is blocked
+    if (table.restaurant.status === 'BLOCKED') {
+        return res.status(403).json({ error: 'This restaurant service is temporarily unavailable.' });
     }
 
     // Check if there is an active session for this table
@@ -23,6 +29,7 @@ exports.handleScan = async (req, res) => {
     if (!session) {
       session = await prisma.session.create({
         data: {
+          restaurant_id: table.restaurant_id,
           table_id: table.id,
           is_active: true
         }
@@ -31,7 +38,9 @@ exports.handleScan = async (req, res) => {
 
     res.json({ 
       session_id: session.session_id, 
-      table_number: table.table_number 
+      table_number: table.table_number,
+      restaurant_id: table.restaurant_id,
+      restaurant_name: table.restaurant.name
     });
 
   } catch (error) {

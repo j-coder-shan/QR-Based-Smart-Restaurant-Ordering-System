@@ -15,66 +15,57 @@ exports.createOrder = async (req, res) => {
 
     let totalAmount = 0;
     const orderItemsData = [];
+    const restaurantId = session.table.restaurant_id;
 
-    for (const item of items) {
-      const menuItem = await prisma.menuItem.findUnique({
-        where: { id: item.menu_item_id }
-      });
+    // EXECUTE ATOMIC TRANSACTION
+    const order = await prisma.$transaction(async (tx) => {
+        // 1. Update Stocks and validate availability
+        for (const item of items) {
+            const menuItem = await tx.menuItem.findFirst({
+                where: { id: item.menu_item_id, restaurant_id: restaurantId }
+            });
 
-      if (!menuItem || !menuItem.is_available || menuItem.stock < item.quantity) {
-        return res.status(400).json({ error: `Item ${menuItem?.name || item.menu_item_id} is unavailable or out of stock.` });
-      }
+            if (!menuItem || !menuItem.is_available || menuItem.stock < item.quantity) {
+                throw new Error(`Item ${menuItem?.name || item.menu_item_id} is unavailable or out of stock.`);
+            }
 
-      const subtotal = Number(menuItem.price) * item.quantity;
-      totalAmount += subtotal;
+            const subtotal = Number(menuItem.price) * item.quantity;
+            totalAmount += subtotal;
 
-      orderItemsData.push({
-        menu_item_id: item.menu_item_id,
-        quantity: item.quantity,
-        unit_price: menuItem.price,
-        subtotal: subtotal
-      });
+            orderItemsData.push({
+                menu_item_id: item.menu_item_id,
+                quantity: item.quantity,
+                unit_price: menuItem.price,
+                subtotal: subtotal
+            });
 
-      // Update Stock
-      await prisma.menuItem.update({
-        where: { id: menuItem.id },
-        data: { 
-          stock: menuItem.stock - item.quantity,
-          is_available: menuItem.stock - item.quantity > 0,
-          total_orders: menuItem.total_orders + item.quantity,
-          total_revenue: { increment: subtotal }
+            await tx.menuItem.update({
+                where: { id: menuItem.id },
+                data: { 
+                    stock: menuItem.stock - item.quantity,
+                    is_available: menuItem.stock - item.quantity > 0,
+                    total_orders: menuItem.total_orders + item.quantity,
+                    total_revenue: { increment: subtotal }
+                }
+            });
         }
-      });
-    }
 
-    const order = await prisma.order.create({
-      data: {
-        table_id: session.table_id,
-        session_id: session.id,
-        total_amount: totalAmount,
-        status: 'Pending',
-        orderItems: {
-          create: orderItemsData
-        }
-      },
-      include: {
-        table: true,
-        orderItems: { include: { menuItem: true } }
-      }
+        // 2. Create Order
+        return await tx.order.create({
+            data: {
+                restaurant_id: restaurantId,
+                table_id: session.table_id,
+                session_id: session.id,
+                total_amount: totalAmount,
+                status: 'Pending',
+                orderItems: { create: orderItemsData }
+            },
+            include: {
+                table: true,
+                orderItems: { include: { menuItem: true } }
+            }
+        });
     });
-
-    // Socket.IO Emit: New Order
-    if (req.io) {
-      req.io.emit('newOrder', order);
-      
-      // Check for low stock on all items in this order
-      for (const item of items) {
-        const updatedMenuItem = await prisma.menuItem.findUnique({ where: { id: item.menu_item_id } });
-        if (updatedMenuItem.stock < 5) {
-          req.io.emit('lowStock', { id: updatedMenuItem.id, name: updatedMenuItem.name, stock: updatedMenuItem.stock });
-        }
-      }
-    }
 
     res.status(201).json({ 
       message: 'Order placed successfully', 
@@ -83,14 +74,16 @@ exports.createOrder = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    const statusCode = error.message.includes('unavailable') ? 400 : 500;
+    res.status(statusCode).json({ error: error.message });
   }
 };
 
 exports.getAllOrders = async (req, res) => {
   const { startDate, endDate } = req.query;
+  const { restaurantId } = req;
   try {
-    const where = {};
+    const where = { restaurant_id: restaurantId };
     
     if (startDate || endDate) {
       where.createdAt = {
@@ -115,9 +108,13 @@ exports.getAllOrders = async (req, res) => {
 
 exports.getOrderById = async (req, res) => {
   const { id } = req.params;
+  const { restaurantId } = req; // Optional if customer, but here assumed admin lookup
   try {
-    const order = await prisma.order.findUnique({
-      where: { id: parseInt(id) },
+    const order = await prisma.order.findFirst({
+      where: { 
+          id: parseInt(id),
+          restaurant_id: restaurantId // STRICTOR: restaurantId is now mandatory for security
+      },
       include: {
         table: true,
         orderItems: { include: { menuItem: true } }
@@ -126,14 +123,16 @@ exports.getOrderById = async (req, res) => {
 
     if (!order) return res.status(404).json({ error: 'Order not found' });
     
-    // Add Smart ETA Calculation (Phase 8 logic)
+    // Smart ETA Calculation (scoped to restaurant)
     const activeOrders = await prisma.order.count({
-        where: { status: { in: ['Pending', 'Accepted', 'Preparing'] } }
+        where: { 
+            status: { in: ['Pending', 'Accepted', 'Preparing'] },
+            restaurant_id: order.restaurant_id
+        }
     });
 
     const maxPrepTime = Math.max(...order.orderItems.map(oi => oi.menuItem.prep_time || 15));
-    const multiplier = process.env.ETA_MULTIPLIER || 2;
-    const estimatedTime = maxPrepTime + (activeOrders * multiplier);
+    const estimatedTime = maxPrepTime + (activeOrders * 2);
 
     res.json({ ...order, estimated_time: estimatedTime });
   } catch (error) {
@@ -144,16 +143,25 @@ exports.getOrderById = async (req, res) => {
 exports.updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
+  const { restaurantId } = req;
+
+  const validStatuses = ['Pending', 'Accepted', 'Preparing', 'Ready', 'Delivered', 'Completed', 'Cancelled'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Invalid order status' });
+  }
 
   try {
     const order = await prisma.order.update({
-      where: { id: parseInt(id) },
+      where: { 
+          id: parseInt(id),
+          restaurant_id: restaurantId
+      },
       data: { status },
       include: { table: true }
     });
 
     if (req.io) {
-      req.io.emit('orderStatusUpdate', order);
+      req.io.to(`restaurant-${restaurantId}`).emit('orderStatusUpdate', order);
     }
 
     res.json({ message: 'Status updated', order });

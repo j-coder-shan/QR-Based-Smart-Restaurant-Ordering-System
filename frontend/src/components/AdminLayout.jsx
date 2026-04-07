@@ -3,7 +3,7 @@ import { Outlet, Navigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
 const AdminLayout = () => {
-  const token = localStorage.getItem('adminToken');
+  const token = localStorage.getItem('token');
 
   if (!token) {
     return <Navigate to="/admin/login" replace />;

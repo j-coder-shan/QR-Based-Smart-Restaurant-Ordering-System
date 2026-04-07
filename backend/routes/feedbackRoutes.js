@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const feedbackController = require('../controllers/feedbackController');
-
 const { verifyToken } = require('../controllers/adminController');
+const { checkAccess } = require('../middleware/checkAccess');
 
 router.post('/', feedbackController.submitFeedback);
-router.get('/menu/:menuItemId', feedbackController.getMenuItemFeedback);
-router.get('/', verifyToken, feedbackController.getAllFeedback);
+router.get('/menu/:menuItemId', verifyToken, checkAccess, feedbackController.getMenuItemFeedback);
+router.get('/', verifyToken, checkAccess, feedbackController.getAllFeedback);
 
 module.exports = router;
