@@ -9,6 +9,7 @@ import OrderStatusPage from './pages/OrderStatusPage';
 import KitchenDashboard from './pages/KitchenDashboard';
 import ErrorPage from './pages/ErrorPage';
 import LandingPage from './pages/LandingPage';
+import FeedbackPage from './pages/FeedbackPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/status/:id" element={<OrderStatusPage />} />
+            <Route path="/feedback/:orderId" element={<FeedbackPage />} />
             <Route path="/admin" element={<KitchenDashboard />} />
             <Route path="/error" element={<ErrorPage />} />
             <Route path="*" element={<Navigate to="/" />} />

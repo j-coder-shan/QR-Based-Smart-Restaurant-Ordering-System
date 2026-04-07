@@ -48,7 +48,7 @@ const OrderStatusPage = () => {
         if (!billRes.data.is_active) {
             // Session closed after payment
             endSession();
-            navigate('/');
+            navigate(`/feedback/${id}`);
         }
       } catch (err) {
         console.error('Fetch status error:', err);

@@ -31,7 +31,7 @@ app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/payments', paymentRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ message: "Intelligent Restaurant Ordering System API running - Phase 10 Payment System" });
+  res.json({ message: "Intelligent Restaurant Ordering System API running - Phase 11 Feedback & Rating System" });
 });
 
 app.use((err, req, res, next) => {

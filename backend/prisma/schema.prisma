@@ -82,6 +82,8 @@ model MenuItem {
   prep_time           Int          @default(15) // Minutes
   total_orders        Int          @default(0)
   total_revenue       Decimal      @default(0.0)
+  avg_rating          Float        @default(0.0)
+  review_count        Int          @default(0)
   createdAt           DateTime     @default(now()) @map("created_at")
   updatedAt           DateTime     @updatedAt @map("updated_at")
 
@@ -140,6 +142,7 @@ model Feedback {
   order        Order        @relation(fields: [order_id], references: [id])
   menuItem     MenuItem?    @relation(fields: [menu_item_id], references: [id])
 
+  @@unique([order_id, menu_item_id])
   @@map("feedback")
 }
 

@@ -2,14 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Utensils, QrCode, Smartphone, Sparkles, ChefHat, ArrowRight } from 'lucide-react';
-import Navbar from '../components/Navbar';
 
 const LandingPage = () => {
     const navigate = useNavigate();
 
     return (
         <div className="min-h-screen bg-white text-slate-900 overflow-hidden selection:bg-orange-100 selection:text-orange-600">
-            <Navbar />
             
             <main className="max-w-7xl mx-auto px-4 pt-16 lg:pt-32 pb-40">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">

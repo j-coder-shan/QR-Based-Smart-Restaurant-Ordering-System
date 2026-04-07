@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
-import { Plus, Minus, Trash2, Clock, Sparkles, AlertTriangle, TrendingUp, ChevronRight } from 'lucide-react';
+import { Plus, Minus, Trash2, Clock, Sparkles, AlertTriangle, TrendingUp, ChevronRight, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MenuItemCard = ({ item }) => {
@@ -48,6 +48,13 @@ const MenuItemCard = ({ item }) => {
             <Sparkles className="w-4 h-4 text-orange-500" />
             <span className="text-xs font-black uppercase tracking-widest">{item.category}</span>
           </div>
+          {item.review_count > 0 && (
+             <div className="flex items-center space-x-1.5 bg-orange-50 px-3 py-1.5 rounded-xl border border-orange-100 transition-all hover:bg-white hover:shadow-sm">
+                <Star className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+                <span className="text-xs font-black text-orange-700">{Number(item.avg_rating).toFixed(1)}</span>
+                <span className="text-[10px] font-black text-orange-300 uppercase tracking-widest">({item.review_count})</span>
+             </div>
+          )}
         </div>
 
         <div className="pt-4 flex items-center justify-between">
