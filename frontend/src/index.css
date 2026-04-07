@@ -8,7 +8,32 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: #f8fafc;
   color: #0f172a;
+}
+
+@media print {
+  nav, button:not(.print-include), .no-print, header, .bg-slate-900\/50, section:not(.print-include) {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .print-card {
+    border: 2px solid #eee !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    position: static !important;
+    display: block !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  .print-card * {
+    color: black !important;
+  }
 }

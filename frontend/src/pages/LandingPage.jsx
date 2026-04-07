@@ -1,36 +1,94 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { Utensils, QrCode, Smartphone, Sparkles, ChefHat, ArrowRight } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 const LandingPage = () => {
-  return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-8 text-center space-y-6">
-        <div className="bg-primary/10 w-20 h-20 mx-auto rounded-full flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+    const navigate = useNavigate();
+
+    return (
+        <div className="min-h-screen bg-white text-slate-900 overflow-hidden selection:bg-orange-100 selection:text-orange-600">
+            <Navbar />
+            
+            <main className="max-w-7xl mx-auto px-4 pt-16 lg:pt-32 pb-40">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                    <motion.div 
+                        initial={{ opacity: 0, x: -30 }} 
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <div className="bg-orange-50 text-orange-600 px-5 py-2 rounded-full font-black uppercase text-[10px] tracking-widest inline-flex items-center space-x-2 mb-8 border border-orange-100 shadow-sm shadow-orange-50">
+                            <Sparkles className="w-4 h-4" />
+                            <span>Revolutionizing the Dining Table</span>
+                        </div>
+                        
+                        <h1 className="text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85] mb-10 italic uppercase italic">
+                            Smart <span className="text-orange-500">Dine</span> System.
+                        </h1>
+                        
+                        <p className="text-xl text-slate-500 font-medium mb-12 max-w-lg leading-relaxed">
+                            A fully automated QR-based ordering ecosystem that understands your cravings and simplifies your kitchen workflow.
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button 
+                                onClick={() => navigate('/scan?table=T01&token=TOKEN_T01_XYZ')}
+                                className="bg-slate-900 text-white px-10 py-6 rounded-3xl font-black text-xl hover:bg-orange-500 hover:shadow-2xl hover:shadow-orange-200 transition-all active:scale-95 flex items-center justify-center space-x-4 pr-12 group"
+                            >
+                                <Smartphone className="w-6 h-6 group-hover:rotate-12 transition-transform" />
+                                <span>Order Now</span>
+                            </button>
+                            
+                            <button 
+                                onClick={() => navigate('/admin')}
+                                className="bg-white border-2 border-slate-100 text-slate-500 px-10 py-6 rounded-3xl font-black text-xl hover:bg-slate-50 transition-all flex items-center justify-center space-x-4 pr-12"
+                            >
+                                <ChefHat className="w-6 h-6 text-slate-400" />
+                                <span>Staff Portal</span>
+                            </button>
+                        </div>
+
+                        <div className="mt-16 flex items-center space-x-8 text-slate-300">
+                           <div className="flex flex-col">
+                              <span className="text-4xl font-black text-slate-900 leading-none">99%</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest mt-1">Accuracy</span>
+                           </div>
+                           <div className="w-px h-10 bg-slate-100" />
+                           <div className="flex flex-col">
+                              <span className="text-4xl font-black text-slate-900 leading-none">0.5s</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest mt-1">Latency</span>
+                           </div>
+                        </div>
+                    </motion.div>
+                    
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.8, rotate: -5 }} 
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        transition={{ duration: 1, type: "spring" }}
+                        className="relative"
+                    >
+                        <div className="absolute inset-0 bg-gradient-radial from-orange-100 to-transparent blur-3xl opacity-50 -z-10" />
+                        <div className="bg-slate-900 rounded-[80px] p-12 lg:p-24 shadow-[0_80px_100px_-20px_rgba(0,0,0,0.15)] relative overflow-hidden group border-8 border-white">
+                           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-orange-500/10 to-transparent"></div>
+                           <div className="relative z-10 flex flex-col items-center text-center">
+                               <div className="w-56 h-56 bg-white rounded-[56px] flex items-center justify-center mb-10 shadow-2xl relative transition-transform group-hover:scale-105 duration-500">
+                                   <QrCode className="w-28 h-28 text-slate-900" />
+                                   <div className="absolute -top-4 -right-4 w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-white font-black animate-bounce">
+                                      <ArrowRight className="w-6 h-6" />
+                                   </div>
+                               </div>
+                               <h3 className="text-4xl font-black text-white mb-4 leading-none uppercase italic">Scan to Begin</h3>
+                               <p className="text-slate-500 font-bold max-w-xs mx-auto text-sm leading-relaxed tracking-wide">
+                                   Each table has a unique, cryptographically secure QR code that generates your temporary dining session.
+                               </p>
+                           </div>
+                        </div>
+                    </motion.div>
+                </div>
+            </main>
         </div>
-        
-        <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Smart Dine-In</h1>
-        <p className="text-slate-500 text-sm">
-          Welcome to our intelligent restaurant ordering experience. Scan the QR code on your table to get started.
-        </p>
-        
-        <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
-          <button className="w-full py-4 px-6 bg-primary text-white rounded-xl font-semibold shadow-md shadow-primary/30 transition-all hover:-translate-y-0.5 active:translate-y-0 text-lg">
-            Scan Table QR
-          </button>
-          
-          <button className="w-full py-4 px-6 bg-white text-slate-700 border-2 border-slate-200 rounded-xl font-semibold transition-all hover:bg-slate-50 active:bg-slate-100 text-lg">
-            View Sample Menu
-          </button>
-        </div>
-      </div>
-      
-      <p className="mt-8 text-slate-400 text-xs text-center max-w-sm">
-        Powered by Intelligent Restaurant Ordering System. Phase 1 setup running successfully.
-      </p>
-    </div>
-  );
+    );
 };
 
 export default LandingPage;

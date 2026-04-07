@@ -4,7 +4,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
+
 
 enum OrderStatus {
   Pending
@@ -19,6 +21,17 @@ enum OrderStatus {
 enum WaiterCallStatus {
   Pending
   Resolved
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
 }
 
 model Table {
@@ -37,17 +50,19 @@ model Table {
 }
 
 model Session {
-  id           Int          @id @default(autoincrement())
-  session_id   String       @unique @default(uuid()) @db.Uuid
-  table_id     Int
-  is_active    Boolean      @default(true)
-  start_time   DateTime     @default(now())
-  end_time     DateTime?
-  expires_at   DateTime?
+  id             Int          @id @default(autoincrement())
+  session_id     String       @unique @default(uuid()) @db.Uuid
+  table_id       Int
+  is_active      Boolean      @default(true)
+  bill_requested Boolean      @default(false)
+  start_time     DateTime     @default(now())
+  end_time       DateTime?
+  expires_at     DateTime?
 
-  table        Table        @relation(fields: [table_id], references: [id])
-  orders       Order[]
-  waiterCalls  WaiterCall[]
+  table          Table        @relation(fields: [table_id], references: [id])
+  orders         Order[]
+  waiterCalls    WaiterCall[]
+  payments       Payment[]
 
   @@index([table_id])
   @@index([session_id])
@@ -55,19 +70,23 @@ model Session {
 }
 
 model MenuItem {
-  id           Int          @id @default(autoincrement())
-  name         String       @db.VarChar
-  description  String?      @db.Text
-  price        Decimal
-  image_url    String?      @db.Text
-  category     String?      @db.VarChar
-  stock        Int          @default(0)
-  is_available Boolean      @default(true)
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  id                  Int          @id @default(autoincrement())
+  name                String       @db.VarChar
+  description         String?      @db.Text
+  price               Decimal
+  image_url           String?      @db.Text
+  category            String?      @db.VarChar
+  stock               Int          @default(0)
+  low_stock_threshold Int          @default(5)
+  is_available        Boolean      @default(true)
+  prep_time           Int          @default(15) // Minutes
+  total_orders        Int          @default(0)
+  total_revenue       Decimal      @default(0.0)
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
 
-  orderItems   OrderItem[]
-  feedback     Feedback[]
+  orderItems          OrderItem[]
+  feedback            Feedback[]
 
   @@index([category])
   @@map("menu_items")
@@ -81,6 +100,7 @@ model Order {
   status         OrderStatus  @default(Pending)
   total_amount   Decimal?     @default(0.0)
   estimated_time Int?
+  is_paid        Boolean      @default(false)
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
 
@@ -143,4 +163,18 @@ model Admin {
   createdAt     DateTime  @default(now()) @map("created_at")
 
   @@map("admins")
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  session_id     Int
+  total_amount   Decimal
+  payment_method PaymentMethod
+  status         PaymentStatus @default(COMPLETED)
+  paid_at        DateTime?     @default(now())
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  session        Session       @relation(fields: [session_id], references: [id])
+
+  @@map("payments")
 }
