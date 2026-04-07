@@ -13,6 +13,31 @@ body {
   color: #0f172a;
 }
 
+/* Custom Scrollbar for Admin Panel */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* For Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0f172a;
+}
+
 @media print {
   nav, button:not(.print-include), .no-print, header, .bg-slate-900\/50, section:not(.print-include) {
     display: none !important;

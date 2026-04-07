@@ -7,9 +7,16 @@ const api = axios.create({
 // Add a request interceptor to include the session_id in headers if needed
 api.interceptors.request.use((config) => {
   const sessionId = localStorage.getItem('session_id');
+  const adminToken = localStorage.getItem('adminToken');
+  
   if (sessionId) {
     config.headers['X-Session-Id'] = sessionId;
   }
+  
+  if (adminToken) {
+    config.headers['Authorization'] = `Bearer ${adminToken}`;
+  }
+  
   return config;
 });
 

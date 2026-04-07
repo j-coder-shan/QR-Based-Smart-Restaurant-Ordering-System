@@ -169,12 +169,12 @@ const OrderStatusPage = () => {
                    {bill.items.map((item, idx) => (
                        <div key={idx} className="flex justify-between items-center text-sm">
                            <span className="font-bold text-slate-600">{item.name} × {item.quantity}</span>
-                           <span className="font-black text-slate-900">${item.subtotal}</span>
+                           <span className="font-black text-slate-900">Rs. {item.subtotal}</span>
                        </div>
                    ))}
                    <div className="border-t border-slate-50 pt-4 flex justify-between items-center">
                        <span className="text-lg font-black text-slate-900">Payable Total</span>
-                       <span className="text-2xl font-black text-orange-500">${bill.total_amount}</span>
+                       <span className="text-2xl font-black text-orange-500">Rs. {bill.total_amount}</span>
                    </div>
                 </div>
 

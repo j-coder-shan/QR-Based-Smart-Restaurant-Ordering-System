@@ -102,12 +102,12 @@ const CartPage = () => {
           <div className="relative z-10">
             <div className="flex justify-between items-center mb-4 text-slate-500 font-black uppercase text-[10px] tracking-widest">
               <span>Subtotal Cravings</span>
-              <span>${totalAmount.toFixed(2)}</span>
+              <span>Rs. {totalAmount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center mb-8 border-t border-slate-800 pt-8">
               <div>
                  <span className="text-slate-500 font-black uppercase text-[10px] tracking-widest block mb-1">Payable Total</span>
-                 <span className="text-5xl font-black text-orange-500">${totalAmount.toFixed(2)}</span>
+                 <span className="text-5xl font-black text-orange-500">Rs. {totalAmount.toFixed(2)}</span>
               </div>
               <div className="bg-white/5 p-4 rounded-2xl flex items-center space-x-3">
                  <Sparkles className="w-6 h-6 text-orange-500" />

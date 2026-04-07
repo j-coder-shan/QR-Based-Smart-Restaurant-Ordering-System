@@ -139,7 +139,7 @@ const KitchenDashboard = () => {
                                     {billRequests.map(bill => (
                                         <button key={bill.id} onClick={() => setSelectedBill(bill)} className="bg-orange-500 text-white px-6 py-2 rounded-xl font-black shadow-lg shadow-orange-500/20 hover:scale-105 transition-all text-xs flex items-center space-x-2">
                                             <span>Table #{bill.table_number}</span>
-                                            <span className="bg-white/20 px-2 rounded-md">${bill.total_amount}</span>
+                                            <span className="bg-white/20 px-2 rounded-md">Rs. {bill.total_amount}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -199,7 +199,7 @@ const KitchenDashboard = () => {
                                 <div className="bg-slate-950 p-10 rounded-[40px] border border-slate-800 mb-10 overflow-hidden relative">
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-transparent" />
                                     <span className="text-slate-500 font-black uppercase text-[10px] tracking-[0.2em] block mb-2">Total Receivable</span>
-                                    <span className="text-7xl font-black text-orange-500 tracking-tighter">${selectedBill.total_amount}</span>
+                                    <span className="text-7xl font-black text-orange-500 tracking-tighter">Rs. {selectedBill.total_amount}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 mb-4">
                                     <button onClick={() => processPayment(selectedBill.session_id, 'CASH')} className="bg-slate-800 hover:bg-green-600 py-8 rounded-[32px] font-black transition-all flex flex-col items-center gap-3">

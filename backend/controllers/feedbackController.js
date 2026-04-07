@@ -90,3 +90,18 @@ exports.getMenuItemFeedback = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getAllFeedback = async (req, res) => {
+  try {
+    const feedback = await prisma.feedback.findMany({
+      include: {
+        menuItem: { select: { name: true } },
+        order: { select: { table_id: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(feedback);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

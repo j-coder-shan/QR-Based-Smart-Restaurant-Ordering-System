@@ -4,7 +4,8 @@ exports.createWaiterCall = async (req, res) => {
   const { session_id } = req.body;
   try {
     const session = await prisma.session.findUnique({
-      where: { session_id: session_id }
+      where: { id: parseInt(session_id) || undefined, session_id: String(session_id).includes('-') ? session_id : undefined },
+      include: { table: true }
     });
 
     if (!session || !session.is_active) {
@@ -15,10 +16,15 @@ exports.createWaiterCall = async (req, res) => {
       data: {
         table_id: session.table_id,
         session_id: session.id
-      }
+      },
+      include: { table: true }
     });
 
-    res.status(201).json({ message: 'Waiter has been notified', call_id: call.id });
+    if (req.io) {
+      req.io.emit('newWaiterCall', call);
+    }
+
+    res.status(201).json({ message: 'Waiter has been notified', call: call });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -40,10 +46,15 @@ exports.getAllWaiterCalls = async (req, res) => {
 exports.resolveWaiterCall = async (req, res) => {
   const { id } = req.params;
   try {
-    await prisma.waiterCall.update({
+    const call = await prisma.waiterCall.update({
       where: { id: parseInt(id) },
       data: { status: 'Resolved' }
     });
+
+    if (req.io) {
+      req.io.emit('waiterCallResolved', { id: parseInt(id) });
+    }
+
     res.json({ message: 'Call resolved' });
   } catch (error) {
     res.status(500).json({ error: error.message });

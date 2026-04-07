@@ -56,8 +56,25 @@ exports.createOrder = async (req, res) => {
         orderItems: {
           create: orderItemsData
         }
+      },
+      include: {
+        table: true,
+        orderItems: { include: { menuItem: true } }
       }
     });
+
+    // Socket.IO Emit: New Order
+    if (req.io) {
+      req.io.emit('newOrder', order);
+      
+      // Check for low stock on all items in this order
+      for (const item of items) {
+        const updatedMenuItem = await prisma.menuItem.findUnique({ where: { id: item.menu_item_id } });
+        if (updatedMenuItem.stock < 5) {
+          req.io.emit('lowStock', { id: updatedMenuItem.id, name: updatedMenuItem.name, stock: updatedMenuItem.stock });
+        }
+      }
+    }
 
     res.status(201).json({ 
       message: 'Order placed successfully', 
@@ -120,8 +137,13 @@ exports.updateOrderStatus = async (req, res) => {
   try {
     const order = await prisma.order.update({
       where: { id: parseInt(id) },
-      data: { status }
+      data: { status },
+      include: { table: true }
     });
+
+    if (req.io) {
+      req.io.emit('orderStatusUpdate', order);
+    }
 
     res.json({ message: 'Status updated', order });
   } catch (error) {

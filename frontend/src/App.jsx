@@ -2,14 +2,26 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { SessionProvider } from './context/SessionContext';
 import { CartProvider } from './context/CartContext';
+
+// Customer Pages
+import LandingPage from './pages/LandingPage';
 import ScanHandler from './pages/ScanHandler';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
 import OrderStatusPage from './pages/OrderStatusPage';
-import KitchenDashboard from './pages/KitchenDashboard';
-import ErrorPage from './pages/ErrorPage';
-import LandingPage from './pages/LandingPage';
 import FeedbackPage from './pages/FeedbackPage';
+
+// Admin Pages
+import AdminLoginPage from './pages/AdminLoginPage';
+import AdminLayout from './components/AdminLayout';
+import AdminDashboard from './pages/AdminDashboard';
+import OrdersPage from './pages/OrdersPage';
+import MenuManager from './pages/MenuManager';
+import TableManager from './pages/TableManager';
+import AnalyticsPage from './pages/AnalyticsPage';
+import FeedbackCenter from './pages/FeedbackCenter';
+
+import ErrorPage from './pages/ErrorPage';
 
 function App() {
   return (
@@ -17,13 +29,28 @@ function App() {
       <CartProvider>
         <Router>
           <Routes>
+            {/* Customer Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/scan" element={<ScanHandler />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/status/:id" element={<OrderStatusPage />} />
             <Route path="/feedback/:orderId" element={<FeedbackPage />} />
-            <Route path="/admin" element={<KitchenDashboard />} />
+            
+            {/* Admin Auth */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            
+            {/* Admin Dashboard Protected Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="menu" element={<MenuManager />} />
+              <Route path="tables" element={<TableManager />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
+              <Route path="feedback" element={<FeedbackCenter />} />
+            </Route>
+
             <Route path="/error" element={<ErrorPage />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

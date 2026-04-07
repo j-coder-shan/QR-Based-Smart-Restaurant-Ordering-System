@@ -34,7 +34,7 @@ const MenuItemCard = ({ item }) => {
       <div className="space-y-4">
         <div className="flex justify-between items-start gap-4">
           <h3 className="text-2xl font-black text-slate-900 leading-tight group-hover:text-orange-500 transition-colors uppercase italic">{item.name}</h3>
-          <span className="text-2xl font-black text-slate-950">${Number(item.price).toFixed(2)}</span>
+          <span className="text-2xl font-black text-slate-950">Rs. {Number(item.price).toFixed(2)}</span>
         </div>
         
         <p className="text-slate-500 text-sm font-medium line-clamp-2 leading-relaxed">{item.description}</p>
