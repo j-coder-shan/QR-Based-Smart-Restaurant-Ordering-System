@@ -1,0 +1,304 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+}
+
+enum RestaurantStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  EXPIRED
+}
+
+enum OrderStatus {
+  Pending
+  Accepted
+  Preparing
+  Ready
+  Delivered
+  Completed
+  Cancelled
+}
+
+enum WaiterCallStatus {
+  Pending
+  Resolved
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Restaurant {
+  id           Int              @id @default(autoincrement())
+  name         String           @db.VarChar
+  email        String           @unique @db.VarChar
+  phone        String?          @db.VarChar
+  category     String?          @db.VarChar
+  status       RestaurantStatus @default(ACTIVE)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  
+  users        User[]
+  tables       Table[]
+  sessions     Session[]
+  menuItems    MenuItem[]
+  orders       Order[]
+  waiterCalls  WaiterCall[]
+  categories   Category[]
+  subscription Subscription?
+  payments     SubscriptionPayment[]
+  feedback     Feedback[]
+  
+  @@map("restaurants")
+}
+
+model User {
+  id            Int        @id @default(autoincrement())
+  restaurant_id Int
+  username      String     @unique @db.VarChar
+  password_hash String     @db.Text
+  role          UserRole   @default(ADMIN)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  
+  restaurant    Restaurant @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  
+  @@index([restaurant_id])
+  @@map("users")
+}
+
+model SuperAdmin {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique @db.VarChar
+  password_hash String   @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+  
+  @@map("super_admins")
+}
+
+model LicenseKey {
+  id              Int      @id @default(autoincrement())
+  key_code        String   @unique @db.VarChar
+  is_used         Boolean  @default(false)
+  restaurant_name String?  @db.VarChar
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  @@map("license_keys")
+}
+
+model Subscription {
+  id             Int                @id @default(autoincrement())
+  restaurant_id  Int                @unique
+  status         SubscriptionStatus @default(TRIAL)
+  trial_end_date DateTime
+  end_date       DateTime?
+  createdAt      DateTime           @default(now()) @map("created_at")
+  
+  restaurant     Restaurant         @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  
+  @@map("subscriptions")
+}
+
+model SubscriptionPayment {
+  id             Int       @id @default(autoincrement())
+  restaurant_id  Int
+  amount         Decimal
+  payment_method String    @db.VarChar
+  type           String    @db.VarChar // TRIAL_UPGRADE / ANNUAL
+  payment_date   DateTime  @default(now())
+  createdAt      DateTime  @default(now()) @map("created_at")
+  
+  restaurant     Restaurant @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  
+  @@map("subscription_payments")
+}
+
+model Table {
+  id            Int          @id @default(autoincrement())
+  restaurant_id Int?
+  table_number  String       @db.VarChar
+  qr_token      String       @unique
+  capacity      Int?
+  is_active     Boolean      @default(true)
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  restaurant    Restaurant?  @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  sessions      Session[]
+  orders        Order[]
+  waiterCalls   WaiterCall[]
+
+  @@index([restaurant_id])
+  @@unique([restaurant_id, table_number])
+  @@map("tables")
+}
+
+model Session {
+  id             Int          @id @default(autoincrement())
+  restaurant_id  Int?
+  session_id     String       @unique @default(uuid()) @db.Uuid
+  table_id       Int
+  is_active      Boolean      @default(true)
+  bill_requested Boolean      @default(false)
+  start_time     DateTime     @default(now())
+  end_time       DateTime?
+  expires_at     DateTime?
+
+  restaurant     Restaurant?  @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  table          Table        @relation(fields: [table_id], references: [id], onDelete: Cascade)
+  orders         Order[]
+  waiterCalls    WaiterCall[]
+  payments       Payment[]
+
+  @@index([restaurant_id])
+  @@index([table_id])
+  @@index([session_id])
+  @@map("sessions")
+}
+
+model MenuItem {
+  id                  Int          @id @default(autoincrement())
+  restaurant_id       Int?
+  name                String       @db.VarChar
+  description         String?      @db.Text
+  price               Decimal
+  image_url           String?      @db.Text
+  category            String?      @db.VarChar
+  stock               Int          @default(0)
+  low_stock_threshold Int          @default(5)
+  is_available        Boolean      @default(true)
+  prep_time           Int          @default(15)
+  total_orders        Int          @default(0)
+  total_revenue       Decimal      @default(0.0)
+  avg_rating          Float        @default(0.0)
+  review_count        Int          @default(0)
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  restaurant          Restaurant?  @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  orderItems          OrderItem[]
+  feedback            Feedback[]
+
+  @@index([restaurant_id])
+  @@index([category])
+  @@map("menu_items")
+}
+
+model Order {
+  id             Int          @id @default(autoincrement())
+  restaurant_id  Int?
+  order_code     String       @unique @default(uuid()) @db.Uuid
+  table_id       Int
+  session_id     Int
+  status         OrderStatus  @default(Pending)
+  total_amount   Decimal?     @default(0.0)
+  estimated_time Int?
+  is_paid        Boolean      @default(false)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  restaurant     Restaurant?  @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  table          Table        @relation(fields: [table_id], references: [id], onDelete: Cascade)
+  session        Session      @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  orderItems     OrderItem[]
+  feedback       Feedback[]
+
+  @@index([restaurant_id])
+  @@index([table_id])
+  @@index([session_id])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           Int          @id @default(autoincrement())
+  order_id     Int
+  menu_item_id Int
+  quantity     Int          @default(1)
+  unit_price   Decimal?
+  subtotal     Decimal?
+
+  order        Order        @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  menuItem     MenuItem     @relation(fields: [menu_item_id], references: [id])
+
+  @@map("order_items")
+}
+
+model Feedback {
+  id            Int          @id @default(autoincrement())
+  restaurant_id Int?
+  order_id      Int
+  menu_item_id  Int?
+  rating        Int
+  comment       String?      @db.Text
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  restaurant    Restaurant?  @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  order         Order        @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  menuItem      MenuItem?    @relation(fields: [menu_item_id], references: [id])
+
+  @@index([restaurant_id])
+  @@unique([order_id, menu_item_id])
+  @@map("feedback")
+}
+
+model WaiterCall {
+  id            Int              @id @default(autoincrement())
+  restaurant_id Int?
+  table_id      Int
+  session_id    Int
+  status        WaiterCallStatus @default(Pending)
+  createdAt     DateTime         @default(now()) @map("created_at")
+
+  restaurant    Restaurant?      @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+  table         Table            @relation(fields: [table_id], references: [id], onDelete: Cascade)
+  session       Session          @relation(fields: [session_id], references: [id], onDelete: Cascade)
+
+  @@index([restaurant_id])
+  @@map("waiter_calls")
+}
+
+model Payment {
+  id             Int           @id @default(autoincrement())
+  session_id     Int
+  total_amount   Decimal
+  payment_method PaymentMethod
+  status         PaymentStatus @default(COMPLETED)
+  paid_at        DateTime?     @default(now())
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  session        Session       @relation(fields: [session_id], references: [id])
+
+  @@map("payments")
+}
+
+model Category {
+  id            Int      @id @default(autoincrement())
+  restaurant_id Int?
+  name          String   @db.VarChar
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  restaurant    Restaurant? @relation(fields: [restaurant_id], references: [id], onDelete: Cascade)
+
+  @@index([restaurant_id])
+  @@unique([restaurant_id, name])
+  @@map("categories")
+}

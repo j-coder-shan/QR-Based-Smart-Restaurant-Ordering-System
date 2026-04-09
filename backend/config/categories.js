@@ -1,0 +1,22 @@
+module.exports = [
+  "Restaurant", "Cafe", "Coffee Shop", "Bar / Pub", "Bakery",
+  "Fast Food", "Pizzeria", "Burger Joint", "Sandwich Shop / Deli", "Fried Chicken Shop",
+  "Taco Shop / Taqueria", "Noodle Bar", "Dim Sum Restaurant", "Ramen Shop", "Sushi Bar",
+  "Steakhouse", "Seafood Restaurant", "BBQ / Smokehouse", "Diner", "Bistro",
+  "Juice Bar", "Smoothie Shop", "Tea House / Tea Room", "Bubble Tea Shop", "Espresso Bar",
+  "Milkshake Bar", "Kombucha Taproom", "Health / Protein Shake Bar", "Soda Fountain", "Craft Coffee Roastery",
+  "Ice Cream Parlor", "Gelateria", "Frozen Yogurt Shop", "Pastry Shop / Patisserie", "Donut Shop",
+  "Chocolatier", "Candy Store / Confectionery", "Creperie", "Waffle House", "Dessert Bar (Late Night)",
+  "Chinese Restaurant", "Indian Restaurant", "Italian Restaurant", "Japanese Restaurant", "Mexican Restaurant",
+  "Thai Restaurant", "French Restaurant", "Mediterranean Restaurant", "Middle Eastern / Lebanese", "Greek Restaurant",
+  "Vietnamese / Pho Shop", "Korean BBQ", "Spanish Tapas Bar", "Turkish Grill / Kebab Shop", "Brazilian Steakhouse",
+  "African Restaurant", "Caribbean / Jamaican", "Fusion Restaurant", "Tex-Mex Restaurant", "Local / Traditional",
+  "Wine Bar", "Cocktail Lounge", "Craft Beer Brewery", "Sports Bar", "Speakeasy", "Gastropub",
+  "Distillery", "Sake Bar", "Rooftop Bar", "Dive Bar",
+  "Catering Service", "Banquet Hall", "Wedding Cake Studio", "Private Chef Service", "Food Truck", "Pop-up Restaurant",
+  "Dinner Theater", "Supper Club", "Buffet / Smorgasbord", "Hotel Restaurant",
+  "Vegan Restaurant", "Vegetarian Cafe", "Organic Food Cafe", "Gluten-Free Bakery", "Farm-to-Table Restaurant",
+  "Macrobiotic Cafe", "Raw Food Bar", "Salad Bar / Healthy Bowls", "Kosher Restaurant", "Halal Restaurant",
+  "Gourmet Grocery", "Cheese Shop (Fromagerie)", "Wine & Spirits Merchant", "Butcher Shop", "Fishmonger",
+  "Farmers Market Stall", "Spice Shop", "Artisanal Jam Shop", "Culinary School", "Ghost Kitchen", "Other"
+];
