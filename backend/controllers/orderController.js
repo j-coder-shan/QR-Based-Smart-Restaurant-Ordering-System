@@ -67,6 +67,10 @@ exports.createOrder = async (req, res) => {
         });
     });
 
+    if (req.io) {
+      req.io.to(`restaurant-${restaurantId}`).emit('newOrder', order);
+    }
+
     res.status(201).json({ 
       message: 'Order placed successfully', 
       order_id: order.id,
@@ -108,20 +112,28 @@ exports.getAllOrders = async (req, res) => {
 
 exports.getOrderById = async (req, res) => {
   const { id } = req.params;
-  const { restaurantId } = req; // Optional if customer, but here assumed admin lookup
+  const { restaurantId } = req; // Admin/Staff context
+  const sessionId = req.headers['x-session-id']; // Customer context
+
   try {
-    const order = await prisma.order.findFirst({
-      where: { 
-          id: parseInt(id),
-          restaurant_id: restaurantId // STRICTOR: restaurantId is now mandatory for security
-      },
+    const order = await prisma.order.findUnique({
+      where: { id: parseInt(id) },
       include: {
         table: true,
-        orderItems: { include: { menuItem: true } }
+        orderItems: { include: { menuItem: true } },
+        session: true
       }
     });
 
     if (!order) return res.status(404).json({ error: 'Order not found' });
+
+    // SECURITY ISOLATION CHECK
+    const isOwnerAdmin = restaurantId && order.restaurant_id === restaurantId;
+    const isOwnerCustomer = sessionId && order.session.session_id === sessionId;
+
+    if (!isOwnerAdmin && !isOwnerCustomer) {
+      return res.status(403).json({ error: 'Unauthorized to view this order.' });
+    }
     
     // Smart ETA Calculation (scoped to restaurant)
     const activeOrders = await prisma.order.count({

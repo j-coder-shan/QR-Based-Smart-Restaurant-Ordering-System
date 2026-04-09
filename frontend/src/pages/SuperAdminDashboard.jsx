@@ -69,7 +69,7 @@ const SuperAdminDashboard = () => {
     if (loading && !analytics) return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center">
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
-                <FiRefreshCw className="text-red-500 text-4xl" />
+                <FiRefreshCw className="text-orange-500 text-4xl" />
             </motion.div>
         </div>
     );
@@ -79,10 +79,10 @@ const SuperAdminDashboard = () => {
             {/* Sidebar */}
             <div className="w-64 bg-slate-900 border-r border-slate-800 p-6 flex flex-col">
                 <div className="flex items-center gap-3 mb-10">
-                    <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-600/20">
+                    <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-600/20">
                         <FiShield size={24} className="text-white" />
                     </div>
-                    <span className="font-bold text-xl tracking-tight">Super <span className="text-red-500">Admin</span></span>
+                    <span className="font-bold text-xl tracking-tight">Super <span className="text-orange-500">Admin</span></span>
                 </div>
 
                 <nav className="space-y-2 flex-1">
@@ -96,7 +96,7 @@ const SuperAdminDashboard = () => {
                             onClick={() => setActiveTab(item.id)}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                                 activeTab === item.id 
-                                ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' 
+                                ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' 
                                 : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                             }`}
                         >
@@ -108,7 +108,7 @@ const SuperAdminDashboard = () => {
 
                 <button 
                     onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-red-400 transition-colors mt-auto"
+                    className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-orange-400 transition-colors mt-auto"
                 >
                     <FiLogOut />
                     <span className="font-medium">Logout</span>
@@ -140,7 +140,7 @@ const SuperAdminDashboard = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="bg-slate-900 rounded-3xl border border-slate-800 p-6">
                                     <h3 className="font-bold mb-6 flex items-center gap-2">
-                                        <FiActivity className="text-red-500" /> Recent Activity
+                                        <FiActivity className="text-orange-500" /> Recent Activity
                                     </h3>
                                     <div className="space-y-4">
                                         {restaurants.slice(0, 5).map(r => (
@@ -172,7 +172,7 @@ const SuperAdminDashboard = () => {
                             <div className="relative max-w-md">
                                 <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                                 <input 
-                                    className="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-2xl outline-none focus:border-red-500"
+                                    className="w-full pl-12 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-2xl outline-none focus:border-orange-500"
                                     placeholder="Search restaurants..."
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -199,7 +199,7 @@ const SuperAdminDashboard = () => {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded-lg text-xs font-bold ${r.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                                                    <span className={`px-2 py-1 rounded-lg text-xs font-bold ${r.status === 'ACTIVE' ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}>
                                                         {r.status}
                                                     </span>
                                                 </td>
@@ -214,7 +214,7 @@ const SuperAdminDashboard = () => {
                                                 <td className="px-6 py-4 text-right">
                                                     <button 
                                                         onClick={() => toggleStatus(r.id, r.status)}
-                                                        className={`p-2 rounded-lg border transition-all ${r.status === 'ACTIVE' ? 'border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white' : 'border-green-500/50 text-green-500 hover:bg-green-500 hover:text-white'}`}
+                                                        className={`p-2 rounded-lg border transition-all ${r.status === 'ACTIVE' ? 'border-orange-500/50 text-orange-500 hover:bg-orange-500 hover:text-white' : 'border-green-500/50 text-green-500 hover:bg-green-500 hover:text-white'}`}
                                                     >
                                                         {r.status === 'ACTIVE' ? <FiLock /> : <FiUnlock />}
                                                     </button>
@@ -233,7 +233,7 @@ const SuperAdminDashboard = () => {
                                 <h2 className="text-xl font-bold">Available License Keys</h2>
                                 <button 
                                     onClick={generateKey}
-                                    className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold shadow-lg shadow-red-600/20 flex items-center gap-2 hover:bg-red-500"
+                                    className="px-6 py-3 bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-orange-600/20 flex items-center gap-2 hover:bg-orange-500"
                                 >
                                     <FiPlus /> Generate New Key
                                 </button>
@@ -241,16 +241,16 @@ const SuperAdminDashboard = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {keys.map(k => (
-                                    <div key={k.id} className={`p-6 rounded-2xl border ${k.is_used ? 'bg-slate-900 border-slate-800 opacity-60' : 'bg-slate-800 border-slate-700 ring-1 ring-red-500/30'}`}>
+                                    <div key={k.id} className={`p-6 rounded-2xl border ${k.is_used ? 'bg-slate-900 border-slate-800 opacity-60' : 'bg-slate-800 border-slate-700 ring-1 ring-orange-500/30'}`}>
                                         <div className="flex justify-between items-start mb-4">
-                                            <FiKey className={k.is_used ? 'text-slate-600' : 'text-red-500'} size={24} />
-                                            <span className={`px-2 py-1 rounded text-[10px] font-bold ${k.is_used ? 'bg-slate-700 text-slate-400' : 'bg-red-500/20 text-red-400'}`}>
+                                            <FiKey className={k.is_used ? 'text-slate-600' : 'text-orange-500'} size={24} />
+                                            <span className={`px-2 py-1 rounded text-[10px] font-bold ${k.is_used ? 'bg-slate-700 text-slate-400' : 'bg-orange-500/20 text-orange-400'}`}>
                                                 {k.is_used ? 'USED' : 'AVAILABLE'}
                                             </span>
                                         </div>
                                         <p className="font-mono text-xl font-bold tracking-widest">{k.key_code}</p>
                                         <p className="text-xs text-slate-500 mt-2">Created: {new Date(k.createdAt).toLocaleDateString()}</p>
-                                        {k.restaurant_name && <p className="text-xs text-red-400 mt-1 font-bold">Store: {k.restaurant_name}</p>}
+                                        {k.restaurant_name && <p className="text-xs text-orange-400 mt-1 font-bold">Store: {k.restaurant_name}</p>}
                                     </div>
                                 ))}
                             </div>
@@ -263,7 +263,7 @@ const SuperAdminDashboard = () => {
 };
 
 const StatCard = ({ label, value, icon: Icon, color }) => (
-    <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800 hover:border-slate-700 transition-colors group">
+        <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800 hover:border-slate-700 transition-colors group">
         <div className={`w-12 h-12 rounded-2xl mb-4 flex items-center justify-center bg-${color}-500/10 text-${color}-500 group-hover:scale-110 transition-transform`}>
             <Icon size={24} />
         </div>

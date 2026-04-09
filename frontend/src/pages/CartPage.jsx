@@ -132,6 +132,14 @@ const CartPage = () => {
                 </>
               )}
             </button>
+
+            <Link 
+              to="/menu" 
+              className="mt-6 w-full flex items-center justify-center text-slate-500 font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-3 h-3 mr-2" />
+              <span>Continue Exploring Flavors</span>
+            </Link>
           </div>
         </div>
       </main>

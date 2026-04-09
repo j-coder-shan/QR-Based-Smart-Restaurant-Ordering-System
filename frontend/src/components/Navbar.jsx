@@ -8,10 +8,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
     const { cartItems } = useCart();
-    const { sessionId, tableNumber, endSession } = useSession();
+    const { sessionId, tableNumber, restaurantName, endSession } = useSession();
     const [callStatus, setCallStatus] = useState('idle');
     const navigate = useNavigate();
     const isAdmin = window.location.pathname.startsWith('/admin');
+    const isDemo = window.location.pathname === '/demo';
 
     const handleCallWaiter = async () => {
         if (!sessionId) return;
@@ -30,10 +31,12 @@ const Navbar = () => {
         <nav className={`sticky top-0 z-50 px-4 py-4 border-b ${isAdmin ? 'bg-slate-950 border-slate-800' : 'bg-white/80 backdrop-blur-xl border-slate-100'}`}>
             <div className="max-w-7xl mx-auto flex justify-between items-center">
                 <Link to="/" className="flex items-center space-x-3 group">
-                    <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200 group-hover:rotate-12 transition-transform">
+                    <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200 group-hover:rotate-12 transition-transform shrink-0">
                         <UtensilsCrossed className="text-white w-6 h-6" />
                     </div>
-                    <span className={`text-2xl font-black tracking-tighter ${isAdmin ? 'text-white' : 'text-slate-900'}`}>SmartDine</span>
+                    <span className={`text-2xl font-black tracking-tighter truncate max-w-[150px] md:max-w-[300px] ${isAdmin ? 'text-white' : 'text-slate-900'}`}>
+                        {restaurantName || 'SmartDine'}
+                    </span>
                 </Link>
 
                 <div className="flex items-center space-x-2 md:space-x-6">
@@ -44,7 +47,7 @@ const Navbar = () => {
                         </div>
                     )}
 
-                    {!isAdmin && sessionId && (
+                    {!isAdmin && !isDemo && sessionId && (
                         <button 
                             onClick={handleCallWaiter}
                             disabled={callStatus !== 'idle'}
@@ -62,7 +65,7 @@ const Navbar = () => {
                         </button>
                     )}
 
-                    {!isAdmin && (
+                    {!isAdmin && !isDemo && (
                         <Link to="/cart" className="p-3 bg-slate-900 text-white rounded-2xl hover:bg-orange-500 transition-all active:scale-90 relative shadow-lg shadow-slate-200">
                             <ShoppingCart className="w-5 h-5" />
                             <AnimatePresence>

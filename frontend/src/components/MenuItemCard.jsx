@@ -2,8 +2,9 @@ import React from 'react';
 import { useCart } from '../context/CartContext';
 import { Plus, Minus, Trash2, Clock, Sparkles, AlertTriangle, TrendingUp, ChevronRight, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getImageUrl } from '../utils/urlUtils';
 
-const MenuItemCard = ({ item }) => {
+const MenuItemCard = ({ item, isDemo = false }) => {
   const { addToCart, cartItems } = useCart();
   const cartItem = cartItems.find(i => i.id === item.id);
   const quantity = cartItem ? cartItem.quantity : 0;
@@ -27,7 +28,7 @@ const MenuItemCard = ({ item }) => {
       </div>
 
       <div className="relative mb-8 rounded-[32px] overflow-hidden aspect-[4/3] bg-slate-100">
-        <img src={item.image_url || 'https://via.placeholder.com/400x300'} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        <img src={getImageUrl(item.image_url)} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
 
@@ -59,28 +60,35 @@ const MenuItemCard = ({ item }) => {
 
         <div className="pt-4 flex items-center justify-between">
             <div className="h-14 flex items-center bg-slate-50 rounded-2xl p-1 border border-slate-100 transition-all hover:bg-white hover:border-orange-500/20">
-                <AnimatePresence mode="wait">
-                    {quantity === 0 ? (
-                        <motion.button 
-                            key="add" onClick={() => addToCart(item)}
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="h-full px-8 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-orange-500 transition-all active:scale-95 flex items-center space-x-2"
-                        >
-                            <span>Quick Add</span>
-                            <ChevronRight className="w-4 h-4" />
-                        </motion.button>
-                    ) : (
-                        <motion.div key="qty" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="flex items-center">
-                            <button onClick={() => addToCart(item, -1)} className="p-3 text-slate-400 hover:text-red-500 transition-all active:scale-90"><Minus className="w-5 h-5" /></button>
-                            <span className="w-10 text-center font-black text-slate-900">{quantity}</span>
-                            <button onClick={() => addToCart(item, 1)} className="p-3 text-slate-400 hover:text-orange-500 transition-all active:scale-90"><Plus className="w-5 h-5" /></button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {isDemo ? (
+                    <div className="h-full px-8 flex items-center space-x-2 text-slate-400 font-black text-[10px] uppercase tracking-widest">
+                        <Sparkles className="w-4 h-4 text-orange-400" />
+                        <span>Sample Dish</span>
+                    </div>
+                ) : (
+                    <AnimatePresence mode="wait">
+                        {quantity === 0 ? (
+                            <motion.button 
+                                key="add" onClick={() => addToCart(item)}
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                className="h-full px-8 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-orange-500 transition-all active:scale-95 flex items-center space-x-2"
+                            >
+                                <span>Quick Add</span>
+                                <ChevronRight className="w-4 h-4" />
+                            </motion.button>
+                        ) : (
+                            <motion.div key="qty" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="flex items-center">
+                                <button onClick={() => addToCart(item, -1)} className="p-3 text-slate-400 hover:text-red-500 transition-all active:scale-90"><Minus className="w-5 h-5" /></button>
+                                <span className="w-10 text-center font-black text-slate-900">{quantity}</span>
+                                <button onClick={() => addToCart(item, 1)} className="p-3 text-slate-400 hover:text-orange-500 transition-all active:scale-90"><Plus className="w-5 h-5" /></button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                )}
             </div>
             
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 mr-2 bg-slate-50 px-3 py-1 rounded-lg">
-                Available
+            <span className={`text-[10px] font-black uppercase tracking-widest mr-2 px-3 py-1 rounded-lg ${isDemo ? 'bg-orange-50 text-orange-500' : 'bg-slate-50 text-slate-400'}`}>
+                {isDemo ? 'Preview Only' : 'Available'}
             </span>
         </div>
       </div>

@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+export const API_ORIGIN = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  baseURL: API_ORIGIN,
 });
 
 // Add a request interceptor to include the session_id or auth token in headers

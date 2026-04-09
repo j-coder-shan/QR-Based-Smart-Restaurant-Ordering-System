@@ -4,6 +4,22 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 
+exports.verifyLicense = async (req, res) => {
+  const { licenseKey } = req.body;
+  try {
+    const key = await prisma.licenseKey.findUnique({ where: { key_code: licenseKey } });
+    if (!key) {
+      return res.status(404).json({ error: 'License key not found. Please contact support.' });
+    }
+    if (key.is_used) {
+      return res.status(400).json({ error: 'This license key has already been used by another establishment.' });
+    }
+    res.json({ valid: true, message: 'License key verified successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.register = async (req, res) => {
   const { 
     licenseKey, 
@@ -72,30 +88,63 @@ exports.register = async (req, res) => {
     const dirPath = path.join(__dirname, '../uploads/receipts');
     const filePath = path.join(dirPath, fileName);
     
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ margin: 50 });
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    doc.fontSize(24).text('Smart Dine - Registration Receipt', { align: 'center' });
-    doc.moveDown();
-    doc.fontSize(14).text(`Hotel Name: ${restaurantName}`);
-    doc.text(`Category: ${category}`);
-    doc.text(`Registration Date: ${new Date().toLocaleDateString()}`);
-    doc.moveDown();
+    // --- 1. Orange Header Block ---
+    doc.rect(0, 0, 612, 120).fill('#ff5722');
     
-    doc.fontSize(18).text('Management Credentials', { underline: true });
-    doc.moveDown(0.5);
-    doc.fontSize(12).text('--- Admin Portal ---');
-    doc.text(`Username: ${adminUsername}`);
-    doc.text(`Password: ${adminPassword}`);
-    doc.moveDown();
+    // Branding Text
+    doc.fillColor('white').fontSize(32).font('Helvetica-Bold').text('SmartDine', 50, 45);
+    doc.fontSize(10).font('Helvetica-Bold').text('SAAS CONNECTS SOLUTIONS', 50, 85, { characterSpacing: 2 });
+    doc.fontSize(14).font('Helvetica').text('REGISTRATION RECEIPT', 400, 55, { align: 'right' });
     
-    doc.text('--- Staff / Kitchen Portal ---');
-    doc.text(`Username: ${staffUsername}`);
-    doc.text(`Password: ${staffPassword}`);
-    doc.moveDown();
+    doc.moveDown(4);
+
+    // --- 2. Business Information Card ---
+    doc.fillColor('#334155').fontSize(16).font('Helvetica-Bold').text('Restaurant Details', 50, 150);
+    doc.rect(50, 175, 512, 80).fill('#f8fafc');
     
-    doc.fontSize(10).fillColor('gray').text('Please keep this document secure. These credentials are required for your first login.');
+    doc.fillColor('#64748b').fontSize(10).font('Helvetica').text('Establishment Name', 70, 190);
+    doc.fillColor('#0f172a').fontSize(12).font('Helvetica-Bold').text(restaurantName, 70, 205);
+
+    doc.fillColor('#64748b').fontSize(10).font('Helvetica').text('Category', 300, 190);
+    doc.fillColor('#0f172a').fontSize(12).font('Helvetica-Bold').text(category, 300, 205);
+
+    doc.fillColor('#64748b').fontSize(10).font('Helvetica').text('Date Authorized', 70, 230);
+    doc.fillColor('#0f172a').fontSize(12).font('Helvetica-Bold').text(new Date().toLocaleDateString(), 70, 245);
+
+    doc.moveDown(7);
+
+    // --- 3. Management Credentials Grid ---
+    doc.fillColor('#334155').fontSize(16).font('Helvetica-Bold').text('Portal Access Credentials', 50, 280);
+    
+    // Admin Block
+    doc.rect(50, 305, 240, 100).fill('#eff6ff').stroke('#bfdbfe');
+    doc.fillColor('#1e40af').fontSize(10).font('Helvetica-Bold').text('ADMIN PORTAL', 70, 320);
+    doc.fillColor('#64748b').fontSize(9).font('Helvetica').text('Control Panel Access', 70, 335);
+    doc.fillColor('#1e293b').fontSize(10).font('Helvetica-Bold').text(`User: ${adminUsername}`, 70, 360);
+    doc.text(`Key: ${adminPassword}`, 70, 380);
+
+    // Staff Block
+    doc.rect(310, 305, 240, 100).fill('#f5f3ff').stroke('#ddd6fe');
+    doc.fillColor('#5b21b6').fontSize(10).font('Helvetica-Bold').text('STAFF / KITCHEN', 330, 320);
+    doc.fillColor('#64748b').fontSize(9).font('Helvetica').text('Daily Operations Access', 330, 335);
+    doc.fillColor('#1e293b').fontSize(10).font('Helvetica-Bold').text(`User: ${staffUsername}`, 330, 360);
+    doc.text(`Key: ${staffPassword}`, 330, 380);
+
+    doc.moveDown(10);
+
+    // --- 4. Security & Support ---
+    doc.rect(50, 440, 512, 60).fill('#fff7ed').stroke('#ffedd5');
+    doc.fillColor('#9a3412').fontSize(9).font('Helvetica-Bold').text('SECURITY NOTICE', 70, 455);
+    doc.fillColor('#c2410c').fontSize(9).font('Helvetica').text('Unauthorized access to these portals is strictly monitored. Please safeguard these credentials and update your passwords upon initial login.', 70, 470, { width: 470 });
+
+    // Footer
+    doc.fillColor('#94a3b8').fontSize(8).font('Helvetica').text('Automating the future of fine dining.', 50, 720, { align: 'center' });
+    doc.fillColor('#64748b').fontSize(9).font('Helvetica-Bold').text('Technical Support: +94 712 823 447 | Email: shanprabodh@icloud.com', 50, 735, { align: 'center' });
+
     doc.end();
 
     // Respond when stream is finished to ensure file exists

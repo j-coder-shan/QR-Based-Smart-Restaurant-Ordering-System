@@ -25,6 +25,7 @@ import RegisterRestaurant from './pages/RegisterRestaurant';
 // Super Admin Pages
 import SuperAdminLogin from './pages/SuperAdminLogin';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
+import DemoMenuPage from './pages/DemoMenuPage';
 
 import ErrorPage from './pages/ErrorPage';
 
@@ -39,6 +40,7 @@ function App() {
             <Route path="/scan" element={<ScanHandler />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/demo" element={<DemoMenuPage />} />
             <Route path="/status/:id" element={<OrderStatusPage />} />
             <Route path="/feedback/:orderId" element={<FeedbackPage />} />
             
@@ -50,7 +52,6 @@ function App() {
             
             {/* Admin Dashboard Protected Routes */}
             <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="menu" element={<MenuManager />} />

@@ -60,7 +60,7 @@ const LandingPage = () => {
                         
                         <div className="flex flex-col sm:flex-row gap-4">
                             <button 
-                                onClick={() => navigate('/scan?table=T01&token=TOKEN_T01_XYZ')}
+                                onClick={() => navigate('/demo')}
                                 className="bg-slate-900 text-white px-10 py-6 rounded-3xl font-black text-xl hover:bg-orange-500 hover:shadow-2xl hover:shadow-orange-200 transition-all active:scale-95 flex items-center justify-center space-x-4 pr-12 group"
                             >
                                 <Smartphone className="w-6 h-6 group-hover:rotate-12 transition-transform" />

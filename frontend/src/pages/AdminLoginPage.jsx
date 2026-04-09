@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiLock, FiUser, FiLayout, FiAlertCircle, FiArrowRight } from 'react-icons/fi';
 import { ChefHat } from 'lucide-react';
+import { useSession } from '../context/SessionContext';
 
 const AdminLoginPage = () => {
+    const { startSession } = useSession();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -14,7 +16,14 @@ const AdminLoginPage = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) navigate('/admin/dashboard');
+        const role = localStorage.getItem('role');
+        if (token) {
+            if (role === 'STAFF') {
+                navigate('/admin/orders');
+            } else {
+                navigate('/admin/dashboard');
+            }
+        }
     }, [navigate]);
 
     const handleLogin = async (e) => {
@@ -30,6 +39,9 @@ const AdminLoginPage = () => {
             localStorage.setItem('role', res.data.role);
             localStorage.setItem('restaurantId', res.data.restaurantId);
             localStorage.setItem('user', JSON.stringify(res.data.user));
+            
+            // Also update SessionContext
+            startSession(null, null, res.data.restaurantName);
 
             if (res.data.role === 'STAFF') {
                 navigate('/admin/orders'); // Staff goes to kitchen

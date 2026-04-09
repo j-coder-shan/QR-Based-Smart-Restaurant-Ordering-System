@@ -40,6 +40,7 @@ exports.login = async (req, res) => {
         token, 
         role: user.role,
         restaurantId: user.restaurant_id,
+        restaurantName: user.restaurant.name,
         user: { id: user.id, username: user.username, role: user.role } 
     });
   } catch (error) {

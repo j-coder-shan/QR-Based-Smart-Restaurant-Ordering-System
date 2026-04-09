@@ -37,15 +37,15 @@ const SuperAdminLogin = () => {
         <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 to-black">
             <div className="max-w-md w-full">
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 text-red-500 rounded-2xl mb-4 border border-red-500/30">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500/20 text-orange-500 rounded-2xl mb-4 border border-orange-500/30">
                         <FiShield size={32} />
                     </div>
-                    <h1 className="text-3xl font-bold text-white">System Admin <span className="text-red-500">Access</span></h1>
+                    <h1 className="text-3xl font-bold text-white">System Admin <span className="text-orange-500">Access</span></h1>
                     <p className="text-slate-400 mt-2 italic">Unauthorized access is strictly prohibited</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700 p-8 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+                    <div className="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
                     
                     <div className="space-y-6">
                         <div className="relative">
@@ -54,7 +54,7 @@ const SuperAdminLogin = () => {
                                 name="username" 
                                 type="text" 
                                 placeholder="Admin Identifier" 
-                                className="w-full pl-10 pr-4 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-red-500 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-orange-500 outline-none transition-all"
                                 onChange={handleChange}
                                 required
                             />
@@ -65,7 +65,7 @@ const SuperAdminLogin = () => {
                                 name="password" 
                                 type="password" 
                                 placeholder="Access Key" 
-                                className="w-full pl-10 pr-4 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-red-500 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:border-orange-500 outline-none transition-all"
                                 onChange={handleChange}
                                 required
                             />
@@ -75,7 +75,7 @@ const SuperAdminLogin = () => {
                             <motion.p 
                                 initial={{ opacity: 0 }} 
                                 animate={{ opacity: 1 }} 
-                                className="text-red-400 text-sm font-medium bg-red-500/10 p-3 rounded-lg border border-red-500/20"
+                                className="text-orange-400 text-sm font-medium bg-orange-500/10 p-3 rounded-lg border border-orange-500/20"
                             >
                                 {error}
                             </motion.p>
@@ -84,7 +84,7 @@ const SuperAdminLogin = () => {
                         <button 
                             type="submit" 
                             disabled={loading}
-                            className="w-full py-4 bg-red-600 text-white rounded-xl font-bold shadow-lg shadow-red-600/20 hover:bg-red-500 transition-all flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-orange-600/20 hover:bg-orange-500 transition-all flex items-center justify-center gap-2"
                         >
                             {loading ? 'Authenticating...' : 'Initiate Secure Login'}
                         </button>

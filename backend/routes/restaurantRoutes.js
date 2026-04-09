@@ -5,6 +5,7 @@ const { verifyToken } = require('../middlewares/authMiddleware');
 
 // Public
 router.post('/register', restaurantController.register);
+router.post('/verify-license', restaurantController.verifyLicense);
 
 // Protected (Restaurant level)
 router.use(verifyToken);

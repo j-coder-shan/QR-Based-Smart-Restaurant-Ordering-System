@@ -76,6 +76,11 @@ const OrdersPage = () => {
     useEffect(() => {
         // Socket.io Setup
         socket.current = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
+        const restaurantId = localStorage.getItem('restaurantId');
+        
+        if (restaurantId) {
+            socket.current.emit('join-restaurant', restaurantId);
+        }
 
         socket.current.on('newOrder', (order) => {
             setOrders(prev => [order, ...prev]);

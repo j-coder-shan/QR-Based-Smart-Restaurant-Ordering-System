@@ -16,6 +16,7 @@ import {
   Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getImageUrl } from '../utils/urlUtils';
 
 const MenuManager = () => {
     const [menuItems, setMenuItems] = useState([]);
@@ -222,7 +223,7 @@ const MenuManager = () => {
                                         <div className="flex items-center space-x-4">
                                             <div className="w-14 h-14 bg-slate-950 rounded-2xl border border-slate-800 flex items-center justify-center overflow-hidden">
                                                 {item.image_url ? (
-                                                  <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                                  <img src={getImageUrl(item.image_url)} alt={item.name} className="w-full h-full object-cover" />
                                                 ) : <Utensils className="w-5 h-5 text-slate-700" />}
                                             </div>
                                             <div>
@@ -403,6 +404,8 @@ const MenuManager = () => {
                                         <div className="w-24 h-24 bg-slate-950 border border-dashed border-slate-800 rounded-2xl flex items-center justify-center overflow-hidden">
                                             {formData.image ? (
                                               <img src={URL.createObjectURL(formData.image)} className="w-full h-full object-cover" />
+                                            ) : editingItem && editingItem.image_url ? (
+                                              <img src={getImageUrl(editingItem.image_url)} className="w-full h-full object-cover" />
                                             ) : <Plus className="text-slate-800 w-8 h-8" />}
                                         </div>
                                         <input 

@@ -88,7 +88,7 @@ const AdminDashboard = () => {
         <div className="space-y-12">
             <header className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-6xl font-black text-white italic uppercase italic leading-none mb-2 tracking-tighter">Overview</h1>
+                    <h1 className="text-5xl font-black text-white uppercase leading-none mb-2 tracking-tight">Overview</h1>
                     <p className="text-slate-500 font-extrabold uppercase tracking-widest text-[10px]">Real-time business performance</p>
                 </div>
                 <div className="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex items-center space-x-3 text-xs font-black uppercase tracking-widest text-slate-400">

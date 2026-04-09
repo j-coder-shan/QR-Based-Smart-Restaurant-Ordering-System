@@ -18,7 +18,7 @@ const ScanHandler = () => {
             const verifyAndStart = async () => {
                 try {
                     const response = await api.post('/api/scan', { tableNumber, qrToken });
-                    startSession(response.data.session_id, response.data.table_number);
+                    startSession(response.data.session_id, response.data.table_number, response.data.restaurant_name);
                     navigate('/menu');
                 } catch (err) {
                     setError('Invalid QR Code');
